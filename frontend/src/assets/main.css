@@ -1,0 +1,70 @@
+@import url('https://fonts.cdnfonts.com/css/gilroy-bold');
+
+/* Определение основных цветов */
+:root{
+  --primary-color: #292929;
+  --secondary-color: #202020;
+  --btn-color: #4921DA;
+  --btn--hover-color: #7C5DFA;
+}
+
+/* Сброс стилей по умолчанию */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Шрифты для body */
+body {
+  font-family: 'Gilroy-Regular', sans-serif;
+  line-height: 1.5;
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Стили для ссылок */
+a{
+  text-decoration: none;
+  color: initial;
+}
+
+/* Установка шрифтов для различных элементов */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Gilroy-Bold', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 2rem); ;
+  font-weight: 400;
+}
+
+input{
+  color: var(--primary-color)
+}
+
+p {
+  font-family: 'Gilroy-Regular', sans-serif;
+}
+
+strong {
+  font-family: 'Gilroy-Bold', sans-serif;
+}
+
+em {
+  font-family: 'Gilroy-Medium', sans-serif;
+}
+
+button, .btn {
+  font-family: 'Gilroy-Heavy', sans-serif;
+  cursor: pointer;
+  outline: none;
+  border: none;
+
+  color: white;
+}
+
+input, textarea {
+  font-family: 'Gilroy-Light', sans-serif;
+}
+
+.header{
+  background: #292929;
+}
