@@ -35,7 +35,7 @@
         </div>
   
         <div v-else class="header_right">
-          <img src="../assets/images/profile.svg" alt="avatar" width="30">
+          <RouterLink v-if="isAuthenticated" to="/profile"><img src="../assets/images/profile.svg" alt="avatar" width="30"></RouterLink>
           <button @click="logout" class="logout">Выход</button>
         </div>
       </div>
@@ -158,6 +158,7 @@ const toggleMenu = () => {
     margin-top: 60px;
     padding: 10px;
     border-radius: 5px;
+    z-index: 20;
 }
 
 .menu p {

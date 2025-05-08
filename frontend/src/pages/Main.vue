@@ -3,6 +3,7 @@
         <Header />
 
         <div class="main-content">
+            
             <MainNews />
             <PopularNews class="popular-news"/>
         </div>

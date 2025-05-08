@@ -8,12 +8,14 @@ import { useAuthStore } from './stores/auth'
 import Main from './pages/Main.vue'
 import Register from './pages/auth/Register.vue'
 import Login from './pages/auth/Login.vue'
+import Profile from './pages/Profile.vue'
 
 const routes = [
     { path: '/', redirect: '/main' },
     { path: '/main', component: Main },
     { path: '/register', component: Register },
-    { path: '/login', component: Login }
+    { path: '/login', component: Login },
+    { path: '/profile', component: Profile}
 ]
 
 const router = createRouter({
