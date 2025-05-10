@@ -71,7 +71,7 @@ const handleRegister = async () => {
     })
 
     if (res && res.status === 1) {
-      route.push('/login')
+      route.push('/main')
     } else if (res && res.status === 0) {
       errorMessage.value = 'Пользователь уже существует'
     } else {

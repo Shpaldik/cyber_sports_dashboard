@@ -45,7 +45,7 @@ const handleLogin = async () => {
 
     if (res && res.status === 1) {
       console.log('Logged in!')
-      router.push('/Main')
+      router.push('/main')
     } else {
       errorMessage.value = res?.message || 'Ошибка входа'
     }

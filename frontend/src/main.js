@@ -9,13 +9,15 @@ import Main from './pages/Main.vue'
 import Register from './pages/auth/Register.vue'
 import Login from './pages/auth/Login.vue'
 import Profile from './pages/Profile.vue'
+import AdminPanel from '@/pages/AdminPanel.vue'
 
 const routes = [
     { path: '/', redirect: '/main' },
     { path: '/main', component: Main },
     { path: '/register', component: Register },
     { path: '/login', component: Login },
-    { path: '/profile', component: Profile}
+    { path: '/profile', component: Profile},
+    { path: '/admin', component: AdminPanel },
 ]
 
 const router = createRouter({

@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('body');
-            $table->integer('price')->nullable();
+            $table->enum('category', ['cs', 'dota']);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

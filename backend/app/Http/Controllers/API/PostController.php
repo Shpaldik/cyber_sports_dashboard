@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -22,7 +23,8 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'body'  => 'required|string',
-            'price' => 'required|numeric',
+            'category' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -33,10 +35,16 @@ class PostController extends Controller
             ], 422);
         }
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('uploads', 'public');
+        }
+
         $post = Post::create([
             "title" => $request->title,
             "body"  => $request->body,
-            "price" => $request->price,
+            "category" => $request->category,
+            "image" => $imagePath,
         ]);
 
         return response()->json([
@@ -68,7 +76,9 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'body'  => 'required|string',
-            'price' => 'required|numeric',
+            'category' => 'required|string',
+
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -89,8 +99,19 @@ class PostController extends Controller
             ], 404);
         }
 
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($post->image && Storage::disk('public')->exists($post->image)) {
+                Storage::disk('public')->delete($post->image);
+            }
+
+            // Upload new image
+            $post->image = $request->file('image')->store('uploads', 'public');
+        }
+
         $post->title = $request->title;
         $post->body = $request->body;
+        $post->category = $request->category;
         $post->price = $request->price;
         $post->save();
 
@@ -110,6 +131,10 @@ class PostController extends Controller
                 "message" => "Post not found",
                 "data" => null
             ], 404);
+        }
+
+        if ($post->image && Storage::disk('public')->exists($post->image)) {
+            Storage::disk('public')->delete($post->image);
         }
 
         $post->delete();
