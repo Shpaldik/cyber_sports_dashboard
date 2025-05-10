@@ -4,8 +4,8 @@
       <div class="profile">
         <div class="profile_right">
           <div class="avatar_name">
-            <img src="../assets/images/logo.svg" alt="" width="50" />
-            <p>Имя</p>
+            <img class="avatar" :src="user.avatar_url || '../assets/images/logo.svg'" alt="avatar" width="80"/>
+            <p class="name">{{ user.name || 'Имя' }}</p>
           </div>
         </div>
   
@@ -23,16 +23,33 @@
 </template>
   
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import ProfileForm from './ProfileForm.vue'
-const openSettings = ref(false)
-  
+import api from '@/services/axios'
 
-  
+const openSettings = ref(false)
+const user = ref({
+  name: '',
+  avatar_url: ''
+})
+
+const fetchProfile = async () => {
+  try {
+    const { data } = await api.get('/profile')
+    user.value.name = data.name
+    user.value.avatar_url = data.avatar_url
+  } catch (error) {
+    console.error('Ошибка загрузки профиля:', error)
+  }
+}
+
+onMounted(fetchProfile)
+
 const openSettingsHandle = () => {
-    openSettings.value = !openSettings.value
+  openSettings.value = !openSettings.value
 }
 </script>
+
   
 <style scoped>
   .profile_block {
@@ -78,6 +95,16 @@ const openSettingsHandle = () => {
     font-size: 16px;
 
     gap: 5px;
+  }
+
+  .avatar{
+    border-radius: 100%;
+  
+  }
+
+  .name{
+    font-size: 20px;
+    font-weight: bold;
   }
 </style>
   
