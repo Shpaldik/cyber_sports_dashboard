@@ -36,7 +36,6 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // Если вы используете throttle, замените его нужным middleware
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],

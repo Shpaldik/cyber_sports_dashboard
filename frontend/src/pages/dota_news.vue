@@ -1,7 +1,7 @@
 <template>
   <Header />
   <div class="category-page">
-    <h1>Dota 2 Новости</h1>
+    <h1>Новости Dota 2</h1>
 
     <div class="search-fields">
     <div class="search-block">
@@ -115,7 +115,7 @@ function displayDate(iso) {
 
 .search-icon {
   position: absolute;
-  top: 3px;
+  top: 7px;
   right: 5px;
   width: 30px;
 }
@@ -126,7 +126,7 @@ function displayDate(iso) {
 }
 
 .search-fields input {
-  padding: 0.6rem;
+  padding: 0.8rem;
   border-radius: 8px;
   border: 1px solid #ccc;
   color: black;

@@ -23,11 +23,7 @@
         <div class="news-title-block">
           <img
             class="dota-icon"
-            :src="
-              activeTab === 'dota'
-                ? '../assets/images/dota_icon.svg'
-                : '../assets/images/cs_icon.svg'
-            "
+            :src="activeTab === 'dota' ? dotaIcon : csIcon"
             alt="icon"
           />
           <p class="news-title">{{ post.title }}</p>
@@ -74,11 +70,13 @@
 <script setup>
 import { ref, watch, onMounted, computed } from "vue";
 import { usePostStore } from "@/stores/post";
+import dotaIcon from '../assets/images/dota_icon.svg';
+import csIcon from '../assets/images/cs_icon.svg';
+
+const activeTab = ref('dota');
 
 const postStore = usePostStore();
-const activeTab = ref("dota");
 
-// Заглушки для комментариев
 const demoComments = [
   { user: "Иванов Иван", time: "17:12", text: "Не верю! Быть такого не может" },
   { user: "Петров Петр", time: "17:15", text: "Интересная теория 😄" },

@@ -1,12 +1,21 @@
 <template>
   <Header />
   <div class="category-page">
-    <h1>CS 2 Новости</h1>
+    <h1>Новости CS 2</h1>
 
     <!-- Поля поиска -->
     <div class="search-fields">
-      <input v-model="searchTitle" type="text" placeholder="Поиск по названию..." />
-      <input v-model="searchDate" type="date" placeholder="Поиск по дате публикации..." />
+        <div class="search-block">
+        <input
+            class="search-title"
+            v-model="searchTitle"
+            type="text"
+            placeholder="Поиск по названию..."
+        />
+        <img class="search-icon" src="../assets/images/search.svg" alt="Поиск">
+        </div>
+
+      <input class="search-date" v-model="searchDate" type="date" placeholder="Дата" />
     </div>
 
     <!-- Список отфильтрованных новостей -->
@@ -78,24 +87,48 @@ function displayDate(iso) {
 
 <style scoped>
 .category-page {
-  padding: 10px 5rem;
-
+  padding: 10px 15%;
+  width: 100%;
   box-sizing: border-box;
   color: white;
 }
+
 .search-fields {
-  margin-top: 1rem;
   display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
   gap: 1rem;
-  flex-wrap: wrap;
+}
+
+.search-title {
+  position: relative;
+  width: 100%;
+  padding: 5px;
+}
+
+.search-block {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  top: 7px;
+  right: 5px;
+  width: 30px;
+}
+
+.search-date {
+  width: 100%;
+  max-width: 200px;
 }
 
 .search-fields input {
-  padding: 0.5rem;
+  padding: 0.8rem;
   border-radius: 8px;
   border: 1px solid #ccc;
   color: black;
 }
+
 
 .news-list {
   margin-top: 1.5rem;
