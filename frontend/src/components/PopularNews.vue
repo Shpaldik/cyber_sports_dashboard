@@ -38,12 +38,14 @@
       </div>
 
       <div class="news-body">
+      <router-link :to="`/${post.category}/${post.id}`">
         <img
           v-if="post.image"
           class="news-image"
           :src="`http://127.0.0.1:8000/storage/${post.image}`"
           alt="news"
         />
+        </router-link>
 
         <div class="comments-panel">
           <div class="comment" v-for="(c, i) in demoComments" :key="i">

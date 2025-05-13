@@ -19,6 +19,7 @@ class PostController extends Controller
         ]);
     }
 
+
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
@@ -55,7 +56,7 @@ class PostController extends Controller
     }
 
     public function show(Request $request, $id) {
-        $post = Post::with('comments.user')->find($id);
+        $post = Post::find($id);
 
 
         if (!$post) {
