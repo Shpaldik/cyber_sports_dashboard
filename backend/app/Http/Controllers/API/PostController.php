@@ -55,7 +55,8 @@ class PostController extends Controller
     }
 
     public function show(Request $request, $id) {
-        $post = Post::find($id);
+        $post = Post::with('comments.user')->find($id);
+
 
         if (!$post) {
             return response()->json([
