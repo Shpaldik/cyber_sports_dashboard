@@ -2,61 +2,73 @@
   <Header />
   <div class="admin-wrapper">
     <h1 class="admin-title">Админ панель</h1>
+    <p class="admin-subtitle">Управление новостями</p>
 
     <div class="form-card">
-      <h2 class="form-title">Добавить новость</h2>
-      <form @submit.prevent="addPost" class="form" enctype="multipart/form-data">
+      <div class="form-header">
+        <img @click="addNews = !addNews" src="../assets/images/plus.svg" alt="Добавить" width="40">
+        <h2 class="form-title">Добавить новость</h2>
+      </div>
+    
+      
+      <form v-if="addNews" @submit.prevent="addPost" class="form" enctype="multipart/form-data">
         <input
           v-model="newPost.title"
           type="text"
-          placeholder="Title"
+          placeholder="Заголовок"
           class="form-input"
         />
         <textarea
           v-model="newPost.body"
-          placeholder="Body"
+          placeholder="Описание"
           class="form-textarea"
         ></textarea>
-        <select v-model="newPost.category" class="form-input">
-          <option disabled value="">Select Category</option>
+        <div class="btn-group">
+          <select v-model="newPost.category" class="form-input-select">
+          <option disabled value="">Выберите категорию</option>
           <option value="cs">CS</option>
           <option value="dota">Dota</option>
         </select>
-        <input
-          type="file"
-          @change="handleImageUpload($event, 'newPost')"
-          class="form-input"
-        />
-        <button type="submit" class="btn btn-primary">Add Post</button>
+        <label class="file-upload">
+          <span class="avatar-upload">Выберите изображение</span>
+          <input type="file" @change="handleImageUpload($event, 'newPost')"  hidden/>
+        </label>
+        </div>
+          <button type="submit" class="btn btn-primary">Добавить новость</button>
       </form>
     </div>
 
     <div class="product-grid">
       <div v-for="post in postStore.posts" :key="post.id" class="product-card">
-        <h3 class="product-title">{{ post.title }}</h3>
-        <p class="product-body">{{ post.body }}</p>
-        <p class="product-meta">Category: {{ post.category }}</p>
-        <img v-if="post.image" :src="`/storage/${post.image}`" class="product-img" />
+        <div class="product-header">
+          <img
+            class="dota-icon"
+            :src="activeTab === 'dota' ? dotaIcon : csIcon"
+            alt="icon" width="40"
+          />
+          <h3 class="product-title">{{ post.title }}</h3>
+        </div>
+
         <div class="btn-group">
-          <button @click="startEdit(post)" class="btn btn-edit">Edit</button>
-          <button @click="deletePost(post.id)" class="btn btn-delete">Удалить</button>
+          <button @click="startEdit(post)" class="btn btn-edit"><img src="../assets/images/edit_icon.svg" alt="edit" width="30"></button>
+          <button @click="deletePost(post.id)" class="btn btn-delete"><img src="../assets/images/delete_icon.svg" alt="delete" width="30"></button>
         </div>
       </div>
     </div>
 
     <div v-if="isEditing" class="modal-overlay">
       <div class="modal">
-        <h2 class="form-title">Edit Post</h2>
+        <h2 class="form-title">Редактировать новость</h2>
         <form @submit.prevent="updatePost" class="form" enctype="multipart/form-data">
           <input
             v-model="editedPost.title"
             type="text"
-            placeholder="Title"
+            placeholder="Заголовок"
             class="form-input"
           />
           <textarea
             v-model="editedPost.body"
-            placeholder="Body"
+            placeholder="Описание"
             class="form-textarea"
           ></textarea>
           <select v-model="editedPost.category" class="form-input">
@@ -87,6 +99,8 @@ import { useRouter } from "vue-router";
 import api from "@/services/axios";
 import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";
+import csIcon from "../assets/images/cs_icon.svg";
+import dotaIcon from "../assets/images/dota_icon.svg";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -97,6 +111,7 @@ if (authStore.role !== "admin") {
 }
 
 const newPost = ref({ title: "", body: "", category: "", image: null });
+const addNews = ref(false)
 const editedPost = ref({});
 const isEditing = ref(false);
 
@@ -105,9 +120,15 @@ onMounted(() => {
 });
 
 // Handle file input
-function handleImageUpload(e) {
-  newPost.value.image = e.target.files[0] || null;
+function handleImageUpload(e, target) {
+  const file = e.target.files[0] || null;
+  if (target === 'newPost') {
+    newPost.value.image = file;
+  } else if (target === 'editedPost') {
+    editedPost.value.image = file;
+  }
 }
+
 
 // Add a new post
 async function addPost() {
@@ -174,45 +195,77 @@ function deletePost(id) {
 <style scoped>
 .admin-wrapper {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #1f2937, #161e26);
-  padding: 2rem;
+  padding: 3rem 15rem;
 }
+
 .admin-title {
-  text-align: center;
   font-size: 2rem;
   color: white;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   font-weight: bold;
 }
+
+.admin-subtitle {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.form-header{
+  display: flex;
+  align-items: center;
+
+}
+
+.product-header{
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
 .form-card {
-  background-color: #2a3b4e;
   padding: 1.5rem;
   border-radius: 0.75rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   margin-bottom: 2rem;
 }
+
 .form-title {
   color: white;
-  margin-bottom: 1rem;
   font-size: 1.2rem;
 }
+
 .form {
   display: grid;
   gap: 1rem;
+  margin-top: 1rem;
 }
+
 .form-input,
 .form-textarea {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  background-color: #4b5563;
   border: none;
-  color: white;
+  color: black;
   outline: none;
 }
+
+.form-input-select{
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  color: black;
+  outline: none;
+  max-width: 200px;
+}
+
 .form-textarea {
   resize: vertical;
   min-height: 80px;
 }
+
 .btn {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -220,66 +273,83 @@ function deletePost(id) {
   font-weight: 500;
   border: none;
   cursor: pointer;
+  background: none;
   transition: background 0.3s ease;
 }
+
 .btn-primary {
   background-color: #4a90e2;
 }
+
 .btn-primary:hover {
   background-color: #357abd;
 }
-.btn-edit {
-  background-color: #fbbf24;
-}
+
+
 .btn-edit:hover {
   background-color: #f59e0b;
 }
-.btn-delete {
-  background-color: #ef4444;
-}
+
+
 .btn-delete:hover {
   background-color: #dc2626;
 }
+
 .btn-cancel {
   background-color: #6b7280;
 }
+
 .btn-cancel:hover {
   background-color: #4b5563;
 }
+
 .btn-save {
   background-color: #22c55e;
 }
+
 .btn-save:hover {
   background-color: #16a34a;
 }
+
 .product-grid {
-  display: grid;
-  gap: 1.5rem;
+  width: 100%;
+  gap: 2.5rem;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
+
 .product-card {
-  background-color: #2a3b4e;
+  background-color: rgba(13, 9, 28, 0.3)e;
   padding: 1rem;
+  display: flex;
+  justify-content: space-between;
   border-radius: 0.75rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-height: 400px;
+  margin-top: 20px;
 }
+
 .product-title {
   color: white;
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
   font-weight: bold;
 }
+
+.btn-group{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .product-body,
 .product-meta {
   color: #d1d5db;
   margin-bottom: 0.5rem;
 }
-.product-img {
-  width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+
+
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -288,12 +358,25 @@ function deletePost(id) {
   align-items: center;
   justify-content: center;
 }
+
 .modal {
-  background-color: #2a3b4e;
+  background-color: rgba(13, 9, 28, 0.3);
   padding: 1.5rem;
   border-radius: 0.75rem;
   width: 100%;
   max-width: 500px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.avatar-upload{
+  padding: 8px;
+  border: none;
+
+  border-radius: 8px;
+  background-color: #4a90e2;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 </style>
