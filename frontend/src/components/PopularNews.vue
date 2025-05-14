@@ -24,7 +24,7 @@
           <img
             class="dota-icon"
             :src="activeTab === 'dota' ? dotaIcon : csIcon"
-            alt="icon"
+            alt="icon" loading="lazy"
           />
           <p class="news-title">{{ post.title }}</p>
         </div>
@@ -32,7 +32,7 @@
           <div class="comments_block">
             <span>{{ displayDate(post.created_at) }}</span>
             <p>{{ post.comments_count || 0 }}</p>
-            <img src="../assets/images/comment.svg" alt="comment" />
+            <img src="../assets/images/comment.svg" alt="comment" loading="lazy"/>
           </div>
         </div>
       </div>
@@ -44,12 +44,13 @@
           class="news-image"
           :src="`http://127.0.0.1:8000/storage/${post.image}`"
           alt="news"
+          loading="lazy"
         />
         </router-link>
 
         <div class="comments-panel">
           <div class="comment" v-for="(c, i) in demoComments" :key="i">
-            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" />
+            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" loading="lazy"/>
             <div>
               <p>
                 <strong>{{ c.user }}</strong> {{ c.time }}

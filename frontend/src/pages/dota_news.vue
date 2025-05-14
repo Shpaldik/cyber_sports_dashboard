@@ -50,10 +50,12 @@
       <p>Нет новостей в категории Dota 2 по заданным критериям.</p>
     </div>
   </div>
+    <Footer />
 </template>
 
 <script setup>
 import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 import { ref, computed, onMounted } from "vue";
 import { usePostStore } from "@/stores/post";
 

@@ -54,6 +54,8 @@ const openSettingsHandle = () => {
 <style scoped>
   .profile_block {
     max-width: 1122px;
+      min-height: 73vh;
+
     width: 100%;
     margin: 20px auto;
     padding: 24px;

@@ -8,9 +8,9 @@
                 </div>
 
                 <div class="nav-links">
-                    <p>Главная</p>
-                    <p>Dota 2</p>
-                    <p>CS 2</p>
+                    <RouterLink to="/"><p>Главная</p></RouterLink>
+                    <RouterLink to="/dota_news"><p>Dota 2</p></RouterLink>
+                    <RouterLink to="/cs_news"><p>CS 2</p></RouterLink>
                 </div>
             </div>
 
@@ -84,9 +84,14 @@
     display: flex;
     gap: 40px;
     justify-content: center; 
+
+    color: white;
 }
 
-
+.nav-links p{
+    cursor: pointer;
+    color: white;
+}
 .burger_menu {
     display: none;
 }

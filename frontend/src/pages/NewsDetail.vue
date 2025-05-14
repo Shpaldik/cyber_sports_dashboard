@@ -9,10 +9,12 @@
     <p class="post-body">Описание:</p>
     <p>{{ post.body }}</p>
   </div>
+  <Footer />
 </template>
 
 <script setup>
 import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/services/axios'

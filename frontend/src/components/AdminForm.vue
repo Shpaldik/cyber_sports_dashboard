@@ -83,13 +83,14 @@
           <div class="btn-group">
             <button type="button" @click="cancelEdit" class="btn btn-cancel">
               Отменить
-            </button>
+            </button> 
             <button type="submit" class="btn btn-save">Сохранить</button>
           </div>
         </form>
       </div>
     </div>
   </div>
+  <Footer />
 </template>
 
 <script setup>
@@ -101,6 +102,7 @@ import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";
 import csIcon from "../assets/images/cs_icon.svg";
 import dotaIcon from "../assets/images/dota_icon.svg";
+import Footer from "./Footer.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -193,9 +195,10 @@ function deletePost(id) {
 </script>
 
 <style scoped>
+
 .admin-wrapper {
-  min-height: 100vh;
-  padding: 3rem 15rem;
+  min-height: 80vh;
+  padding: 3rem clamp(1rem, 15vw, 15rem);
 }
 
 .admin-title {
@@ -348,8 +351,6 @@ function deletePost(id) {
   margin-bottom: 0.5rem;
 }
 
-
-
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -360,7 +361,7 @@ function deletePost(id) {
 }
 
 .modal {
-  background-color: rgba(13, 9, 28, 0.3);
+  background-color: rgba(0, 0, 0, 0.96);
   padding: 1.5rem;
   border-radius: 0.75rem;
   width: 100%;
