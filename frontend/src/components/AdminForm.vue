@@ -43,7 +43,7 @@
         <div class="product-header">
           <img
             class="dota-icon"
-            :src="activeTab === 'dota' ? dotaIcon : csIcon"
+            :src="post.category === 'dota' ? dotaIcon : csIcon"
             alt="icon" width="40"
           />
           <h3 class="product-title">{{ post.title }}</h3>
