@@ -1,118 +1,165 @@
 <template>
   <div class="popular-news">
+    <!-- === Шапка и табы === -->
     <div class="popular-header">
       <h1>Популярное</h1>
       <div class="tabs">
         <button :class="{ active: activeTab === 'dota' }" @click="switchTab('dota')">
-          Dota 2
+          Dota 2
         </button>
         <button :class="{ active: activeTab === 'cs' }" @click="switchTab('cs')">
-          CS 2
+          CS 2
         </button>
       </div>
     </div>
 
-    <!-- Перебираем все посты категории -->
+    <!-- === Карточки новостей === -->
     <div
       v-if="filteredPosts.length"
-      class="news-card"
       v-for="post in filteredPosts"
       :key="post.id"
+      class="news-card"
     >
+      <!-- info -->
       <div class="news-info">
         <div class="news-title-block">
           <img
             class="dota-icon"
             :src="activeTab === 'dota' ? dotaIcon : csIcon"
-            alt="icon" loading="lazy"
+            alt="icon"
           />
           <p class="news-title">{{ post.title }}</p>
         </div>
         <div class="news-meta">
           <div class="comments_block">
-            <span>{{ displayDate(post.created_at) }}</span>
-            <p>{{ post.comments_count || 0 }}</p>
-            <img src="../assets/images/comment.svg" alt="comment" loading="lazy"/>
+            <span>{{ formatDate(post.created_at) }}</span>
+            <p>{{ post.comments_count }}</p>
+            <img src="../assets/images/comment.svg" alt="comment" />
           </div>
         </div>
       </div>
 
+      <!-- body -->
       <div class="news-body">
-      <router-link :to="`/${post.category}/${post.id}`">
-        <img
-          v-if="post.image"
-          class="news-image"
-          :src="`http://127.0.0.1:8000/storage/${post.image}`"
-          alt="news"
-          loading="lazy"
-        />
+        <router-link :to="`/${post.category}/${post.id}`">
+          <img
+            v-if="post.image"
+            class="news-image"
+            :src="`http://127.0.0.1:8000/storage/${post.image}`"
+            alt="news"
+          />
         </router-link>
 
+        <!-- панель с 3 комментариями + форма -->
         <div class="comments-panel">
-          <div class="comment" v-for="(c, i) in demoComments" :key="i">
-            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" loading="lazy"/>
+          <div
+            v-for="c in post.recent_comments"
+            :key="c.id"
+            class="comment"
+          >
+            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" />
             <div>
               <p>
-                <strong>{{ c.user }}</strong> {{ c.time }}
+                <strong>{{ c.user_name }}</strong>
+                {{ formatTime(c.created_at) }}
               </p>
-              <p>{{ c.text }}</p>
-              <button>Ответить</button>
+              <p>{{ c.body }}</p>
+              <button @click.prevent="replyTo(post.id, c.id)">Ответить</button>
             </div>
           </div>
-          <button class="see-all">Смотреть все</button>
+
+          <!-- Форма для залогиненных -->
+          <div v-if="auth.token && auth.user" class="new-comment">
+            <textarea
+              v-model="newBodies[post.id]"
+              placeholder="Оставить комментарий…"
+              rows="2"
+            ></textarea>
+            <button
+              :disabled="!newBodies[post.id]?.trim()"
+              @click="submitComment(post.id)"
+            >
+              Отправить
+            </button>
+          </div>
+
+          <router-link :to="`/${post.category}/${post.id}`">
+            <button class="see-all">Смотреть все</button>
+          </router-link>
         </div>
       </div>
     </div>
 
+    <!-- если нет постов в категории -->
     <div v-else class="news-card">
-      <p style="padding: 1rem; color: #ccc">Нет новостей в категории {{ activeTab }}</p>
+      <p style="padding:1rem; color:#ccc">
+        Нет новостей в категории {{ activeTab }}
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
-import { usePostStore } from "@/stores/post";
-import dotaIcon from '../assets/images/dota_icon.svg';
-import csIcon from '../assets/images/cs_icon.svg';
+import { ref, reactive, onMounted, watch, computed } from 'vue'
+import { usePostStore } from '@/stores/post'
+import { useAuthStore } from '@/stores/auth'
+import dotaIcon from '../assets/images/dota_icon.svg'
+import csIcon   from '../assets/images/cs_icon.svg'
 
-const activeTab = ref('dota');
+const activeTab = ref('dota')
+const postStore  = usePostStore()
+const auth       = useAuthStore()
 
-const postStore = usePostStore();
+// для каждого post.id своё поле ввода
+const newBodies = reactive({})
 
-const demoComments = [
-  { user: "Иванов Иван", time: "17:12", text: "Не верю! Быть такого не может" },
-  { user: "Петров Петр", time: "17:15", text: "Интересная теория 😄" },
-];
-
-// Загрузка постов по категории
-async function loadCategory(cat) {
-  await postStore.fetchPostsByCategory(cat);
+async function loadPosts(cat) {
+  await postStore.fetchPostsByCategory(cat)
 }
 
-onMounted(() => loadCategory(activeTab.value));
-watch(activeTab, loadCategory);
+onMounted(() => loadPosts(activeTab.value))
+watch(activeTab, loadPosts)
 
 function switchTab(cat) {
-  activeTab.value = cat;
+  activeTab.value = cat
 }
 
-// Отфильтровываем посты по активной категории
-const filteredPosts = computed(() =>
-  postStore.posts.filter((p) => p.category === activeTab.value)
-);
+const filteredPosts = computed(() => postStore.posts)
 
-// Вспомогательная функция форматирования даты
-function displayDate(iso) {
-  const d = new Date(iso);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yy = d.getFullYear();
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-  return `${dd}.${mm}.${yy} в ${hh}:${mi}`;
+function formatDate(iso) {
+  const d = new Date(iso)
+  return `${String(d.getDate()).padStart(2,'0')}.` +
+         `${String(d.getMonth()+1).padStart(2,'0')}.` +
+         `${d.getFullYear()} в ` +
+         `${String(d.getHours()).padStart(2,'0')}:` +
+         `${String(d.getMinutes()).padStart(2,'0')}`
+}
+
+function formatTime(iso) {
+  const d = new Date(iso)
+  return `${String(d.getHours()).padStart(2,'0')}:` +
+         `${String(d.getMinutes()).padStart(2,'0')}`
+}
+
+function replyTo(postId, commentId) {
+  // заглушка: можно скроллить к форме или переадресовывать
+  console.log('Reply to', postId, commentId)
+}
+
+async function submitComment(postId) {
+  const body = (newBodies[postId] || '').trim()
+  if (!body) return
+
+  const res = await postStore.addComment(postId, body)
+  if (res.status === 1) {
+    // очистим только что отправленный
+    newBodies[postId] = ''
+  } else {
+    alert('Ошибка: ' + (res.message || '…'))
+  }
 }
 </script>
+
 
 <style scoped>
 .popular-news {
@@ -246,5 +293,34 @@ function displayDate(iso) {
   .comments-panel {
     max-width: 100%;
   }
+}
+
+.new-comment {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin: .5rem 0;
+}
+.new-comment textarea {
+  width: 100%;
+  border-radius: 8px;
+  padding: .5rem;
+  resize: vertical;
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+}
+.new-comment button {
+  align-self: flex-end;
+  padding: .5rem 1rem;
+  border-radius: 8px;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.new-comment button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 </style>

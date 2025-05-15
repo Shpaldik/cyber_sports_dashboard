@@ -10,14 +10,24 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+    // app/Http/Controllers/API/PostController.php
+
     public function index(Request $request) {
-        $posts = Post::paginate(5);
+        $cat = $request->query('category');
+        $posts = Post::withCount('comments')
+            ->with(['comments' => function($q){
+                $q->latest()->take(3);
+            }])
+            ->when($cat, fn($q) => $q->where('category', $cat))
+            ->paginate(5);
+
         return response()->json([
             'status' => 1,
-            "message" => "Posts fetched",
-            "data" => $posts
+            'message' => 'Posts fetched',
+            'data' => $posts
         ]);
     }
+
 
 
     public function store(Request $request) {
