@@ -144,14 +144,17 @@ const handleLogin = async () => {
     color: red;
   }
   
-  @media (max-width: 930px) {
-    .login-container {
-      flex-direction: column;
-    }
-  
-    .image-block {
-      display: none;
-    }
+ @media (max-width: 930px) {
+  .login-container {
+    flex-direction: column;
+    padding: 0 20px; /* ➕ Добавляем горизонтальные отступы */
+    align-items: center; /* ➕ Центрируем форму */
   }
+
+  .image-block {
+    display: none;
+  }
+}
+
   </style>
   
