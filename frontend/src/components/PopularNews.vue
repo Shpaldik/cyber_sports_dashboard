@@ -52,11 +52,7 @@
 
         <!-- панель с 3 комментариями + форма -->
         <div class="comments-panel">
-          <div
-            v-for="c in post.recent_comments"
-            :key="c.id"
-            class="comment"
-          >
+          <div v-for="c in post.recent_comments" :key="c.id" class="comment">
             <img class="avatar" src="../assets/images/logo.svg" alt="avatar" />
             <div>
               <p>
@@ -74,13 +70,22 @@
               v-model="newBodies[post.id]"
               placeholder="Оставить комментарий…"
               rows="2"
+              :disabled="Boolean(Number(auth.user.banned))"
             ></textarea>
+
             <button
-              :disabled="!newBodies[post.id]?.trim()"
+              :disabled="!newBodies[post.id]?.trim() || Boolean(Number(auth.user.banned))"
               @click="submitComment(post.id)"
             >
               Отправить
             </button>
+
+            <p
+              v-if="Boolean(Number(auth.user.banned))"
+              style="color: red; margin-top: 0.3rem"
+            >
+              Вы забанены и не можете оставлять комментарии.
+            </p>
           </div>
 
           <router-link :to="`/${post.category}/${post.id}`">
@@ -92,74 +97,84 @@
 
     <!-- если нет постов в категории -->
     <div v-else class="news-card">
-      <p style="padding:1rem; color:#ccc">
-        Нет новостей в категории {{ activeTab }}
-      </p>
+      <p style="padding: 1rem; color: #ccc">Нет новостей в категории {{ activeTab }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, computed } from 'vue'
-import { usePostStore } from '@/stores/post'
-import { useAuthStore } from '@/stores/auth'
-import dotaIcon from '../assets/images/dota_icon.svg'
-import csIcon   from '../assets/images/cs_icon.svg'
+import { ref, reactive, onMounted, watch, computed } from "vue";
+import { usePostStore } from "@/stores/post";
+import { useAuthStore } from "@/stores/auth";
+import dotaIcon from "../assets/images/dota_icon.svg";
+import csIcon from "../assets/images/cs_icon.svg";
 
-const activeTab = ref('dota')
-const postStore  = usePostStore()
-const auth       = useAuthStore()
+const activeTab = ref("dota");
+const postStore = usePostStore();
+const auth = useAuthStore();
 
 // для каждого post.id своё поле ввода
-const newBodies = reactive({})
+const newBodies = reactive({});
 
 async function loadPosts(cat) {
-  await postStore.fetchPostsByCategory(cat)
+  await postStore.fetchPostsByCategory(cat);
 }
 
-onMounted(() => loadPosts(activeTab.value))
-watch(activeTab, loadPosts)
+onMounted(() => loadPosts(activeTab.value));
+watch(activeTab, loadPosts);
 
 function switchTab(cat) {
-  activeTab.value = cat
+  activeTab.value = cat;
 }
 
-const filteredPosts = computed(() => postStore.posts)
+const filteredPosts = computed(() => postStore.posts);
 
 function formatDate(iso) {
-  const d = new Date(iso)
-  return `${String(d.getDate()).padStart(2,'0')}.` +
-         `${String(d.getMonth()+1).padStart(2,'0')}.` +
-         `${d.getFullYear()} в ` +
-         `${String(d.getHours()).padStart(2,'0')}:` +
-         `${String(d.getMinutes()).padStart(2,'0')}`
+  const d = new Date(iso);
+  return (
+    `${String(d.getDate()).padStart(2, "0")}.` +
+    `${String(d.getMonth() + 1).padStart(2, "0")}.` +
+    `${d.getFullYear()} в ` +
+    `${String(d.getHours()).padStart(2, "0")}:` +
+    `${String(d.getMinutes()).padStart(2, "0")}`
+  );
 }
 
 function formatTime(iso) {
-  const d = new Date(iso)
-  return `${String(d.getHours()).padStart(2,'0')}:` +
-         `${String(d.getMinutes()).padStart(2,'0')}`
+  const d = new Date(iso);
+  return (
+    `${String(d.getHours()).padStart(2, "0")}:` +
+    `${String(d.getMinutes()).padStart(2, "0")}`
+  );
 }
 
 function replyTo(postId, commentId) {
   // заглушка: можно скроллить к форме или переадресовывать
-  console.log('Reply to', postId, commentId)
+  console.log("Reply to", postId, commentId);
 }
 
 async function submitComment(postId) {
-  const body = (newBodies[postId] || '').trim()
-  if (!body) return
+  const body = (newBodies[postId] || "").trim();
+  if (!body) return;
 
-  const res = await postStore.addComment(postId, body)
-  if (res.status === 1) {
-    // очистим только что отправленный
-    newBodies[postId] = ''
-  } else {
-    alert('Ошибка: ' + (res.message || '…'))
+  try {
+    const res = await postStore.addComment(postId, body);
+
+    if (res.status === 1) {
+      newBodies[postId] = "";
+    } else {
+      alert("Ошибка: " + (res.message || "…"));
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      alert("Вы забанены и не можете оставлять комментарии.");
+    } else {
+      alert("Ошибка при отправке комментария.");
+      console.error(error);
+    }
   }
 }
 </script>
-
 
 <style scoped>
 .popular-news {
@@ -307,13 +322,13 @@ async function submitComment(postId) {
 .new-comment {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
-  margin: .5rem 0;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
 }
 .new-comment textarea {
   width: 100%;
   border-radius: 8px;
-  padding: .5rem;
+  padding: 0.5rem;
   resize: vertical;
   background: #222;
   color: #fff;
@@ -321,7 +336,7 @@ async function submitComment(postId) {
 }
 .new-comment button {
   align-self: flex-end;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   background: #6c63ff;
   color: white;
@@ -329,7 +344,7 @@ async function submitComment(postId) {
   cursor: pointer;
 }
 .new-comment button:disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 </style>

@@ -19,6 +19,15 @@ class CommentController extends Controller
             'body' => 'required|string|max:1000',
         ]);
 
+            $user = $request->user();
+
+        if ($user->banned) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Вы забанены и не можете оставлять комментарии.',
+            ], 403);
+        }
+
         if ($validator->fails()) {
             return response()->json([
                 'status'  => 0,

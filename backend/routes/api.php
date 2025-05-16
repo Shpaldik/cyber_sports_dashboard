@@ -7,6 +7,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\AdminUserController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -32,4 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::put('/profile/password', [ProfileController::class, 'changePassword']);
+});
+
+Route::middleware(['auth:sanctum'])->group(function(){
+    Route::get('admin/users', [AdminUserController::class,'index']);
+    Route::put('admin/users/{user}/ban', [AdminUserController::class,'toggleBan']);
+    Route::get('admin/users/{user}', [AdminUserController::class,'show']);
 });
