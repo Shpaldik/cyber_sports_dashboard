@@ -113,13 +113,25 @@ async function submitComment() {
   const body = newComment.value.trim();
   if (!body) return;
 
-  const res = await postStore.addComment(post.value.id, body);
-  if (res.status === 1) {
-    // res.data — новый комментарий
-    post.value.comments.unshift(res.data);
-    newComment.value = "";
-  } else {
-    alert("Ошибка: " + (res.message || "Не удалось добавить комментарий"));
+  try {
+    const res = await postStore.addComment(post.value.id, body);
+
+    if (res.status === 1) {
+      newComment.value = "";
+      // Перезагрузить пост и комментарии
+      const refreshed = await api.get(`/posts/${post.value.id}`);
+      post.value = refreshed.data.data;
+      post.value.comments = Array.isArray(post.value.comments) ? post.value.comments : [];
+    } else {
+      alert("Ошибка: " + (res.message || "…"));
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      alert("Вы забанены и не можете оставлять комментарии.");
+    } else {
+      alert("Ошибка при отправке комментария.");
+      console.error(error);
+    }
   }
 }
 </script>

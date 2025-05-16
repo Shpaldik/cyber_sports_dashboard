@@ -138,11 +138,21 @@ async function submitComment(postId) {
   const body = (newBodies[postId] || "").trim();
   if (!body) return;
 
-  const res = await postStore.addComment(postId, body);
-  if (res.status === 1) {
-    newBodies[postId] = "";
-  } else {
-    alert("Ошибка: " + (res.message || "..."));
+  try {
+    const res = await postStore.addComment(postId, body);
+
+    if (res.status === 1) {
+      newBodies[postId] = "";
+    } else {
+      alert("Ошибка: " + (res.message || "…"));
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      alert("Вы забанены и не можете оставлять комментарии.");
+    } else {
+      alert("Ошибка при отправке комментария.");
+      console.error(error);
+    }
   }
 }
 </script>
