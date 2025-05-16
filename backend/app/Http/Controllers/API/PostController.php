@@ -28,21 +28,19 @@ class PostController extends Controller
         ]);
     }
 
-
-
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string',
-            'body'  => 'required|string',
+            'title'    => 'required|string',
+            'body'     => 'required|string',
             'category' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 0,
+                'status'  => 0,
                 'message' => 'Validation errors.',
-                'data' => $validator->errors()->all()
+                'data'    => $validator->errors()->all()
             ], 422);
         }
 
@@ -52,52 +50,58 @@ class PostController extends Controller
         }
 
         $post = Post::create([
-            "title" => $request->title,
-            "body"  => $request->body,
-            "category" => $request->category,
-            "image" => $imagePath,
+            'title'    => $request->title,
+            'body'     => $request->body,
+            'category' => $request->category,
+            'image'    => $imagePath,
         ]);
 
         return response()->json([
-            "status" => 1,
-            "message" => "Post created",
-            "data" => $post
+            'status'  => 1,
+            'message' => 'Post created',
+            'data'    => $post
         ]);
     }
 
-    public function show(Request $request, $id) {
-        $post = Post::find($id);
-
+    public function show(Request $request, $id)
+    {
+        // Подтягиваем пост со всеми комментариями и их пользователями
+        $post = Post::with([
+                'comments'      => function($q) {
+                    $q->latest();      // новые комментарии сверху
+                },
+                'comments.user'    // связь user() в модели Comment
+            ])
+            ->find($id);
 
         if (!$post) {
             return response()->json([
-                "status" => 0,
-                "message" => "Post not found",
-                "data" => null
+                'status'  => 0,
+                'message' => 'Post not found',
+                'data'    => null
             ], 404);
         }
 
         return response()->json([
-            "status" => 1,
-            "message" => "Post fetched",
-            "data" => $post
+            'status'  => 1,
+            'message' => 'Post fetched',
+            'data'    => $post
         ]);
     }
 
     public function update(Request $request, $id) {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string',
-            'body'  => 'required|string',
+            'title'    => 'required|string',
+            'body'     => 'required|string',
             'category' => 'required|string',
-
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 0,
+                'status'  => 0,
                 'message' => 'Validation errors.',
-                'data' => $validator->errors()->all()
+                'data'    => $validator->errors()->all()
             ]);
         }
 
@@ -105,31 +109,28 @@ class PostController extends Controller
 
         if (!$post) {
             return response()->json([
-                "status" => 0,
-                "message" => "Post not found",
-                "data" => null
+                'status'  => 0,
+                'message' => 'Post not found',
+                'data'    => null
             ], 404);
         }
 
         if ($request->hasFile('image')) {
-            // Delete old image
             if ($post->image && Storage::disk('public')->exists($post->image)) {
                 Storage::disk('public')->delete($post->image);
             }
-
-            // Upload new image
             $post->image = $request->file('image')->store('uploads', 'public');
         }
 
-        $post->title = $request->title;
-        $post->body = $request->body;
+        $post->title    = $request->title;
+        $post->body     = $request->body;
         $post->category = $request->category;
         $post->save();
 
         return response()->json([
-            "status" => 1,
-            "message" => "Post updated",
-            "data" => $post
+            'status'  => 1,
+            'message' => 'Post updated',
+            'data'    => $post
         ]);
     }
 
@@ -138,9 +139,9 @@ class PostController extends Controller
 
         if (!$post) {
             return response()->json([
-                "status" => 0,
-                "message" => "Post not found",
-                "data" => null
+                'status'  => 0,
+                'message' => 'Post not found',
+                'data'    => null
             ], 404);
         }
 
@@ -151,9 +152,9 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json([
-            "status" => 1,
-            "message" => "Post deleted",
-            "data" => null
+            'status'  => 1,
+            'message' => 'Post deleted',
+            'data'    => null
         ]);
     }
 }

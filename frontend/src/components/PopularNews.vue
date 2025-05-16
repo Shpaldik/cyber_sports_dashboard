@@ -167,16 +167,19 @@ async function submitComment(postId) {
   box-sizing: border-box;
   color: white;
 }
+
 .popular-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
 }
+
 .tabs {
   display: flex;
   gap: 1rem;
 }
+
 .tabs button {
   border: none;
   padding: 0.5rem 1rem;
@@ -187,10 +190,12 @@ async function submitComment(postId) {
   background: #444;
   color: #aaa;
 }
+
 .tabs button.active {
   background: var(--btn-color);
   color: white;
 }
+
 .news-card {
   border-radius: 16px;
   margin-top: 1.5rem;
@@ -198,11 +203,13 @@ async function submitComment(postId) {
   flex-direction: column;
   gap: 1rem;
 }
+
 .news-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .news-title-block {
   display: flex;
   align-items: center;
@@ -210,19 +217,21 @@ async function submitComment(postId) {
   font-weight: 500;
   font-size: 1rem;
 }
+
 .dota-icon {
   width: 30px;
 }
+
 .news-meta .comments_block {
   display: flex;
   align-items: center;
   gap: 5px;
   color: #fff;
 }
+
 .news-body {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
 }
 .news-image {
   width: 100%;

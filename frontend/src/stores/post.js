@@ -26,19 +26,29 @@ export const usePostStore = defineStore('post', {
     },
 
      async addComment(postId, body) {
-      const res = await api.post(`/posts/${postId}/comments`, { body })
-      if (res.data.status === 1) {
-        // обновляем локально:
-        const post = this.posts.find(p => p.id === postId)
-        if (post) {
-          // пушим в начало recent_comments
-          post.recent_comments.unshift(res.data.data)
-          post.comments_count++
-          // держим только 3
-          post.recent_comments = post.recent_comments.slice(0, 3)
-        }
+  const res = await api.post(`/posts/${postId}/comments`, { body });
+  if (res.data.status === 1) {
+    const newComment = res.data.data;
+    const post = this.posts.find(p => p.id === postId);
+
+    if (post) {
+      // ✅ Добавляем в recent_comments
+      post.recent_comments = post.recent_comments || [];
+      post.recent_comments.unshift(newComment);
+      post.recent_comments = post.recent_comments.slice(0, 3);
+
+      // ✅ Увеличиваем счётчик
+      post.comments_count = (post.comments_count || 0) + 1;
+
+      // ✅ Если есть полноценный список комментариев — добавляем и туда
+      if (Array.isArray(post.comments)) {
+        post.comments.unshift(newComment);
       }
-      return res.data
     }
+  }
+  return res.data;
+}
+
+
   }
 })

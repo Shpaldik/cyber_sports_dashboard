@@ -27,10 +27,13 @@ class CommentController extends Controller
             ], 422);
         }
 
-        $comment = new Comment([
-            'body'      => $request->body,
-            'user_name' => $request->user()->name, 
+        $comment = $post->comments()->create([
+            'body'    => $request->body,
+            'user_id' => $request->user()->id,
         ]);
+
+        // Подгружаем автора
+        $comment->load('user');
 
         $post->comments()->save($comment);
 
