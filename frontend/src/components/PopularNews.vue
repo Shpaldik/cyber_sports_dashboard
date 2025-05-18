@@ -54,8 +54,8 @@
               class="avatar"
               :src="
                 (c.user && c.user.avatar_url) ||
-                (c.user && `http://127.0.0.1:8000/storage/${c.user.avatar}`) ||
-                '../assets/images/logo.svg'
+                (c.user && c.user.avatar) ||
+                '/default-avatar.png'
               "
               alt="avatar"
             />

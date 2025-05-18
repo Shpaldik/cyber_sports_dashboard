@@ -115,7 +115,7 @@ async function submitComment() {
 
     if (res.status === 1) {
       newComment.value = "";
-      // Перезагрузить пост и комментарии
+      // перезагрузка поста и комментарии
       const refreshed = await api.get(`/posts/${post.value.id}`);
       post.value = refreshed.data.data;
       post.value.comments = Array.isArray(post.value.comments) ? post.value.comments : [];

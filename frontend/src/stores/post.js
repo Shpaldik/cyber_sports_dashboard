@@ -2,21 +2,20 @@ import { defineStore } from 'pinia'
 import api from '@/services/axios'
 
 export const usePostStore = defineStore('post', {
-  state: () => ({ posts: [] }),
+  state: () => ({ posts: [], allPosts: [] }),
   actions: {
     async fetchPosts() {
-      const res = await api.get('/posts')
-      this.posts = res.data.data.data
+      const res = await api.get('/posts');
+      this.allPosts = res.data.data.data;
     },
-        async fetchPostsByCategory(category) {
-      const res = await api.get('/posts', { params: { category } })
-      // Laravel-пагинация: data.data.data — это массив
+
+    async fetchPostsByCategory(category) {
+      const res = await api.get('/posts', { params: { category } });
       this.posts = res.data.data.data.map(p => ({
         ...p,
-        // переименуем comments → recent_comments
         recent_comments: p.comments || [],
         comments_count: p.comments_count || 0
-      }))
+      }));
     },
     async deletePost(id) {
       const res = await api.delete(`/posts/${id}`)
