@@ -23,7 +23,6 @@
   </div>
 
   <!-- Комментарии -->
-  <!-- Комментарии -->
   <div v-if="post.comments" class="comments-section">
     <h2>Комментарии ({{ post.comments.length }}):</h2>
 
@@ -99,6 +98,7 @@ onMounted(async () => {
   }
 });
 
+//форматирование даты
 function formatTime(iso) {
   const d = new Date(iso);
   return (
@@ -110,6 +110,7 @@ function formatTime(iso) {
   );
 }
 
+// отправка новых комментариев
 async function submitComment() {
   const body = newComment.value.trim();
   if (!body) return;

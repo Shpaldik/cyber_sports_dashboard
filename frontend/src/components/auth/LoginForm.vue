@@ -61,15 +61,9 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-html,
-body {
-  height: 100%;
-  margin: 0;
-}
-
 .login-page {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
   padding: 40px 10px;
   box-sizing: border-box;
@@ -77,12 +71,11 @@ body {
 
 .login-container {
   display: flex;
+  justify-content: center;
 
   align-items: center;
   gap: 80px;
   max-width: 1200px;
-  width: 100%;
-  flex-wrap: wrap;
 }
 
 .form-block {
