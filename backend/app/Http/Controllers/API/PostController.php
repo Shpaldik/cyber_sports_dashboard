@@ -15,9 +15,12 @@ class PostController extends Controller
     public function index(Request $request) {
         $cat = $request->query('category');
         $posts = Post::withCount('comments')
-            ->with(['comments' => function($q){
-                $q->latest()->take(3);
-            }])
+            ->with([
+                'comments' => function($q){
+                    $q->latest()->take(3);
+                },
+                'comments.user'   // <<< вот это — очень важно!
+            ])
             ->when($cat, fn($q) => $q->where('category', $cat))
             ->paginate(5);
 
@@ -27,6 +30,7 @@ class PostController extends Controller
             'data' => $posts
         ]);
     }
+
 
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [

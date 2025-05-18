@@ -16,13 +16,13 @@
           <transition name="menu">
             <div v-if="menu" class="menu">
               <RouterLink to="/" v-if="route.path !== '/'">
-                <p>Главная</p>
+                <span class="header_item">Главная</span>
               </RouterLink>
               <RouterLink to="/dota_news" v-if="route.path !== '/dota_news'">
-                <p>Dota 2</p>
+                <span class="header_item">Dota 2</span>
               </RouterLink>
               <RouterLink to="/cs_news" v-if="route.path !== '/cs_news'">
-                <p>CS 2</p>
+                <span class="header_item">Cs 2</span>
               </RouterLink>
             </div>
           </transition>
@@ -30,13 +30,13 @@
 
         <div class="nav-links">
           <RouterLink to="/" v-if="route.path !== '/'">
-            <p>Главная</p>
+            <span class="header_item">Главная</span>
           </RouterLink>
           <RouterLink to="/dota_news" v-if="route.path !== '/dota_news'">
-            <p>Dota 2</p>
+            <span class="header_item">Dota 2</span>
           </RouterLink>
           <RouterLink to="/cs_news" v-if="route.path !== '/cs_news'">
-            <p>CS 2</p>
+            <span class="header_item">CS 2</span>
           </RouterLink>
         </div>
       </div>
@@ -93,7 +93,6 @@ const toggleMenu = () => {
 </script>
 
 <style scoped>
-
 .header {
   width: 100%;
   height: 80px;
@@ -180,6 +179,18 @@ const toggleMenu = () => {
 .menu p {
   cursor: pointer;
   color: white;
+
+  transition: 0.2s;
+}
+
+.header_item {
+  color: white;
+
+  transition: 0.3s;
+}
+
+.header_item:hover {
+  color: #6c63ff;
 }
 
 .menu-enter-active,

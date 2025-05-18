@@ -46,10 +46,14 @@
         <!-- Панель с 3 комментариями и формой -->
         <div class="comments-panel">
           <div v-for="c in post.recent_comments" :key="c.id" class="comment">
-            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" />
+            <img
+              class="avatar"
+              :src="c.user?.avatar_url || '/default-avatar.png'"
+              alt="avatar"
+            />
             <div>
               <p>
-                <strong>{{ c.user_name }}</strong>
+                <strong>{{ c.user.name }}</strong>
                 {{ formatTime(c.created_at) }}
               </p>
               <p>{{ c.body }}</p>
@@ -100,13 +104,15 @@ const searchTitle = ref("");
 const searchDate = ref("");
 const newBodies = reactive({}); // для каждого поста своё поле ввода
 
-onMounted(() => {
-  postStore.fetchPostsByCategory("cs");
-});
+// Загружаем только CS2 посты
+async function loadPosts() {
+  await postStore.fetchPostsByCategory("cs");
+}
+
+onMounted(loadPosts);
 
 const filteredPosts = computed(() =>
   postStore.posts
-    .filter((p) => p.category === "cs")
     .filter((p) => p.title.toLowerCase().includes(searchTitle.value.toLowerCase()))
     .filter((p) => {
       if (!searchDate.value) return true;
@@ -121,7 +127,7 @@ function formatDate(iso) {
     `${String(d.getDate()).padStart(2, "0")}.` +
     `${String(d.getMonth() + 1).padStart(2, "0")}.` +
     `${d.getFullYear()} в ` +
-    `${String(d.getHours()).padStart(2, "0")}:` +
+    `${String(d.getHours()).padStart(2, "0")} : ` +
     `${String(d.getMinutes()).padStart(2, "0")}`
   );
 }
@@ -129,7 +135,7 @@ function formatDate(iso) {
 function formatTime(iso) {
   const d = new Date(iso);
   return (
-    `${String(d.getHours()).padStart(2, "0")}:` +
+    `${String(d.getHours()).padStart(2, "0")} : ` +
     `${String(d.getMinutes()).padStart(2, "0")}`
   );
 }
@@ -140,9 +146,10 @@ async function submitComment(postId) {
 
   try {
     const res = await postStore.addComment(postId, body);
-
     if (res.status === 1) {
       newBodies[postId] = "";
+      // обновляем комментарии после добавления
+      await loadPosts();
     } else {
       alert("Ошибка: " + (res.message || "…"));
     }
@@ -232,13 +239,19 @@ async function submitComment(postId) {
 }
 
 .news-body {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  justify-content: space-between;
   margin-top: 1rem;
 }
 
 .news-image {
   width: 100%;
+  height: 100%;
   border-radius: 12px;
   object-fit: cover;
+  max-width: 63%;
 }
 
 .no-news {
@@ -247,13 +260,15 @@ async function submitComment(postId) {
 }
 
 .comments-panel {
-  margin-top: 1rem;
+  flex: 1 1 35%;
+  max-width: 35%;
   background: rgba(13, 9, 28, 0.3);
-  padding: 1rem;
   border-radius: 12px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-width: 280px;
 }
 
 .comment {

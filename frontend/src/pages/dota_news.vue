@@ -10,7 +10,7 @@
           class="search-title"
           v-model="searchTitle"
           type="text"
-          placeholder="Поиск по названию..."
+          placeholder="Поиск по названию…"
         />
         <img class="search-icon" src="../assets/images/search.svg" alt="Поиск" />
       </div>
@@ -20,20 +20,20 @@
     <!-- === Список новостей === -->
     <div v-if="filteredPosts.length" class="news-list">
       <div v-for="post in filteredPosts" :key="post.id" class="news-card">
-        <!-- заголовок + метадата -->
+        <!-- Заголовок и метаданные -->
         <div class="news-info">
           <div class="news-title-block">
-            <img class="category-icon" src="../assets/images/dota_icon.svg" alt="CS 2" />
+            <img class="category-icon" :src="dotaIcon" alt="Dota" />
             <p class="news-title">{{ post.title }}</p>
           </div>
           <div class="news-meta">
-            <span>{{ displayDate(post.created_at) }}</span>
+            <span>{{ formatDate(post.created_at) }}</span>
             <p>{{ post.comments_count }}</p>
             <img src="../assets/images/comment.svg" alt="comment" />
           </div>
         </div>
 
-        <!-- картинка новости -->
+        <!-- Изображение -->
         <div class="news-body">
           <img
             v-if="post.image"
@@ -43,20 +43,24 @@
           />
         </div>
 
-        <!-- панель с 3 комментариями + форма -->
+        <!-- Панель с комментариями и формой -->
         <div class="comments-panel">
           <div v-for="c in post.recent_comments" :key="c.id" class="comment">
-            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" />
+            <img
+              class="avatar"
+              :src="c.user?.avatar_url || '/default-avatar.png'"
+              alt="avatar"
+            />
             <div>
               <p>
-                <strong>{{ c.user_name }}</strong>
+                <strong>{{ c.user.name }}</strong>
                 {{ formatTime(c.created_at) }}
               </p>
               <p>{{ c.body }}</p>
             </div>
           </div>
 
-          <!-- Форма (для авторизованных) -->
+          <!-- Форма для авторизованных -->
           <div v-if="auth.token && auth.user" class="new-comment">
             <textarea
               v-model="newBodies[post.id]"
@@ -78,9 +82,9 @@
       </div>
     </div>
 
-    <!-- если нет новостей -->
+    <!-- Если нет новостей -->
     <div v-else class="no-news">
-      <p>Нет новостей в категории CS 2 по заданным критериям.</p>
+      <p>Нет новостей в категории Dota по заданным критериям.</p>
     </div>
   </div>
   <Footer />
@@ -92,24 +96,24 @@ import Footer from "../components/Footer.vue";
 import { ref, reactive, onMounted, computed } from "vue";
 import { usePostStore } from "@/stores/post";
 import { useAuthStore } from "@/stores/auth";
-
-import csIcon from "../assets/images/cs_icon.svg";
-import dotaIcon from "../assets/images/dota_icon.svg"; // не обязательно, но можно
+import dotaIcon from "../assets/images/dota_icon.svg";
 
 const postStore = usePostStore();
 const auth = useAuthStore();
 
 const searchTitle = ref("");
 const searchDate = ref("");
-const newBodies = reactive({}); // для каждого post.id своё поле ввода
+const newBodies = reactive({});
 
-onMounted(() => {
-  postStore.fetchPostsByCategory("cs");
-});
+// Загружаем только Dota посты
+async function loadPosts() {
+  await postStore.fetchPostsByCategory("dota");
+}
+
+onMounted(loadPosts);
 
 const filteredPosts = computed(() =>
   postStore.posts
-    .filter((p) => p.category === "cs")
     .filter((p) => p.title.toLowerCase().includes(searchTitle.value.toLowerCase()))
     .filter((p) => {
       if (!searchDate.value) return true;
@@ -118,13 +122,13 @@ const filteredPosts = computed(() =>
     })
 );
 
-function displayDate(iso) {
+function formatDate(iso) {
   const d = new Date(iso);
   return (
     `${String(d.getDate()).padStart(2, "0")}.` +
     `${String(d.getMonth() + 1).padStart(2, "0")}.` +
     `${d.getFullYear()} в ` +
-    `${String(d.getHours()).padStart(2, "0")}:` +
+    `${String(d.getHours()).padStart(2, "0")} : ` +
     `${String(d.getMinutes()).padStart(2, "0")}`
   );
 }
@@ -132,7 +136,7 @@ function displayDate(iso) {
 function formatTime(iso) {
   const d = new Date(iso);
   return (
-    `${String(d.getHours()).padStart(2, "0")}:` +
+    `${String(d.getHours()).padStart(2, "0")} : ` +
     `${String(d.getMinutes()).padStart(2, "0")}`
   );
 }
@@ -143,9 +147,9 @@ async function submitComment(postId) {
 
   try {
     const res = await postStore.addComment(postId, body);
-
     if (res.status === 1) {
       newBodies[postId] = "";
+      await loadPosts();
     } else {
       alert("Ошибка: " + (res.message || "…"));
     }

@@ -53,9 +53,13 @@
             <img
               class="avatar"
               :src="
-                (c.user && c.user.avatar_url) ||
-                (c.user && c.user.avatar) ||
-                '/default-avatar.png'
+                c.user && (c.user.avatar_url || c.user.avatar)
+                  ? (c.user.avatar_url || c.user.avatar).startsWith('http')
+                    ? c.user.avatar_url || c.user.avatar
+                    : `http://127.0.0.1:8000/storage/${
+                        c.user.avatar_url || c.user.avatar
+                      }`
+                  : '/default-avatar.png'
               "
               alt="avatar"
             />
@@ -187,9 +191,8 @@ async function submitComment(postId) {
 
 .popular-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  row-gap: 1rem;
 }
 
 .tabs {
@@ -204,8 +207,8 @@ async function submitComment(postId) {
   font-size: 0.9rem;
   cursor: pointer;
   transition: 0.2s;
-  background: #444;
-  color: #aaa;
+  background: rgba(255, 255, 255, 1);
+  color: black;
 }
 
 .tabs button.active {
@@ -233,6 +236,11 @@ async function submitComment(postId) {
   gap: 10px;
   font-weight: 500;
   font-size: 1rem;
+}
+
+.news-title {
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .dota-icon {
