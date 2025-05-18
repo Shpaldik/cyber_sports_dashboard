@@ -33,51 +33,53 @@
           </div>
         </div>
 
-        <!-- Изображение -->
+        <!-- Изображение с ссылкой -->
         <div class="news-body">
-          <img
-            v-if="post.image"
-            class="news-image"
-            :src="`http://127.0.0.1:8000/storage/${post.image}`"
-            alt="news"
-          />
-        </div>
-
-        <!-- Панель с комментариями и формой -->
-        <div class="comments-panel">
-          <div v-for="c in post.recent_comments" :key="c.id" class="comment">
+          <RouterLink :to="`/${post.category}/${post.id}`" class="news-link">
             <img
-              class="avatar"
-              :src="c.user?.avatar_url || '/default-avatar.png'"
-              alt="avatar"
+              v-if="post.image"
+              class="news-image"
+              :src="`http://127.0.0.1:8000/storage/${post.image}`"
+              alt="news"
             />
-            <div>
-              <p>
-                <strong>{{ c.user.name }}</strong>
-                {{ formatTime(c.created_at) }}
-              </p>
-              <p>{{ c.body }}</p>
+          </RouterLink>
+
+          <!-- Комментарии -->
+          <div class="comments-panel">
+            <div v-for="c in post.recent_comments" :key="c.id" class="comment">
+              <img
+                class="avatar"
+                :src="c.user?.avatar_url || '/default-avatar.png'"
+                alt="avatar"
+              />
+              <div>
+                <p>
+                  <strong>{{ c.user.name }}</strong>
+                  {{ formatTime(c.created_at) }}
+                </p>
+                <p>{{ c.body }}</p>
+              </div>
             </div>
-          </div>
 
-          <!-- Форма для авторизованных -->
-          <div v-if="auth.token && auth.user" class="new-comment">
-            <textarea
-              v-model="newBodies[post.id]"
-              placeholder="Оставить комментарий…"
-              rows="2"
-            ></textarea>
-            <button
-              :disabled="!newBodies[post.id]?.trim()"
-              @click="submitComment(post.id)"
-            >
-              Отправить
-            </button>
-          </div>
+            <!-- Форма для авторизованных -->
+            <div v-if="auth.token && auth.user" class="new-comment">
+              <textarea
+                v-model="newBodies[post.id]"
+                placeholder="Оставить комментарий…"
+                rows="2"
+              ></textarea>
+              <button
+                :disabled="!newBodies[post.id]?.trim()"
+                @click="submitComment(post.id)"
+              >
+                Отправить
+              </button>
+            </div>
 
-          <router-link :to="`/${post.category}/${post.id}`">
-            <button class="see-all">Смотреть все</button>
-          </router-link>
+            <router-link :to="`/${post.category}/${post.id}`">
+              <button class="see_all">Смотреть все</button>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -169,21 +171,26 @@ async function submitComment(postId) {
   padding: 10px 15%;
   color: white;
 }
+
+/* === Поиск === */
 .search-fields {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-top: 1rem;
 }
+
 .search-block {
   position: relative;
 }
+
 .search-title {
   width: 100%;
   padding: 0.8rem;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
+
 .search-icon {
   position: absolute;
   top: 50%;
@@ -191,74 +198,101 @@ async function submitComment(postId) {
   transform: translateY(-50%);
   width: 24px;
 }
+
 .search-date {
   width: 200px;
   padding: 0.8rem;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
+
+/* === Список новостей === */
 .news-list {
   margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
+
 .news-card {
   border-radius: 16px;
   padding: 1rem;
-  background: #1e1e1e;
 }
+
 .news-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .news-title-block {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .category-icon {
   width: 30px;
 }
+
 .news-meta {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
+/* === Картинка и комментарии === */
 .news-body {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
   margin-top: 1rem;
 }
+
 .news-image {
   width: 100%;
+  height: 100%;
   border-radius: 12px;
   object-fit: cover;
 }
+
 .comments-panel {
-  margin-top: 1rem;
+  flex: 1 1 35%;
+  max-width: 55%;
   background: rgba(13, 9, 28, 0.3);
-  padding: 1rem;
   border-radius: 12px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-width: 280px;
+  max-height: fit-content;
 }
+
+.news-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 .comment {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
 }
+
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .new-comment {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .new-comment textarea {
   width: 100%;
   border-radius: 8px;
@@ -268,6 +302,7 @@ async function submitComment(postId) {
   color: #fff;
   border: 1px solid #444;
 }
+
 .new-comment button {
   align-self: flex-end;
   padding: 0.5rem 1rem;
@@ -277,10 +312,36 @@ async function submitComment(postId) {
   border: none;
   cursor: pointer;
 }
+
 .new-comment button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.news-link {
+  width: 100%;
+  text-decoration: none;
+  color: white;
+}
+
+.see-all,
+.see_all {
+  background: white;
+  width: 100%;
+  padding: 10px;
+  margin: 5px auto;
+  border-radius: 16px;
+  color: black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.see-all:hover,
+.see_all:hover {
+  background: #6c63ff;
+  color: white;
+}
+
 .no-news {
   margin-top: 1.5rem;
   color: #ccc;

@@ -35,50 +35,53 @@
 
         <!-- Изображение -->
         <div class="news-body">
-          <img
-            v-if="post.image"
-            class="news-image"
-            :src="`http://127.0.0.1:8000/storage/${post.image}`"
-            alt="news"
-          />
+          <RouterLink :to="`/${post.category}/${post.id}`" class="news-link">
+            <img
+              v-if="post.image"
+              class="news-image"
+              :src="`http://127.0.0.1:8000/storage/${post.image}`"
+              alt="news"
+            />
+          </RouterLink>
+
+          <div class="comments-panel">
+            <div v-for="c in post.recent_comments" :key="c.id" class="comment">
+              <img
+                class="avatar"
+                :src="c.user?.avatar_url || '/default-avatar.png'"
+                alt="avatar"
+              />
+              <div>
+                <p>
+                  <strong>{{ c.user.name }}</strong>
+                  {{ formatTime(c.created_at) }}
+                </p>
+                <p>{{ c.body }}</p>
+              </div>
+            </div>
+
+            <!-- Форма для залогиненных -->
+            <div v-if="auth.token && auth.user" class="new-comment">
+              <textarea
+                v-model="newBodies[post.id]"
+                placeholder="Оставить комментарий…"
+                rows="2"
+              ></textarea>
+              <button
+                :disabled="!newBodies[post.id]?.trim()"
+                @click="submitComment(post.id)"
+              >
+                Отправить
+              </button>
+            </div>
+
+            <router-link :to="`/${post.category}/${post.id}`">
+              <button class="see_all">Смотреть все</button>
+            </router-link>
+          </div>
         </div>
 
         <!-- Панель с 3 комментариями и формой -->
-        <div class="comments-panel">
-          <div v-for="c in post.recent_comments" :key="c.id" class="comment">
-            <img
-              class="avatar"
-              :src="c.user?.avatar_url || '/default-avatar.png'"
-              alt="avatar"
-            />
-            <div>
-              <p>
-                <strong>{{ c.user.name }}</strong>
-                {{ formatTime(c.created_at) }}
-              </p>
-              <p>{{ c.body }}</p>
-            </div>
-          </div>
-
-          <!-- Форма для залогиненных -->
-          <div v-if="auth.token && auth.user" class="new-comment">
-            <textarea
-              v-model="newBodies[post.id]"
-              placeholder="Оставить комментарий…"
-              rows="2"
-            ></textarea>
-            <button
-              :disabled="!newBodies[post.id]?.trim()"
-              @click="submitComment(post.id)"
-            >
-              Отправить
-            </button>
-          </div>
-
-          <router-link :to="`/${post.category}/${post.id}`">
-            <button class="see-all">Смотреть все</button>
-          </router-link>
-        </div>
       </div>
     </div>
 
@@ -211,7 +214,6 @@ async function submitComment(postId) {
 }
 
 .news-card {
-  background: #1e1e1e;
   border-radius: 16px;
   padding: 1rem;
 }
@@ -240,7 +242,6 @@ async function submitComment(postId) {
 
 .news-body {
   display: flex;
-  flex-wrap: nowrap;
   gap: 1rem;
   justify-content: space-between;
   margin-top: 1rem;
@@ -251,7 +252,11 @@ async function submitComment(postId) {
   height: 100%;
   border-radius: 12px;
   object-fit: cover;
-  max-width: 63%;
+}
+
+.news-title {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .no-news {
@@ -261,7 +266,7 @@ async function submitComment(postId) {
 
 .comments-panel {
   flex: 1 1 35%;
-  max-width: 35%;
+  max-width: 55%;
   background: rgba(13, 9, 28, 0.3);
   border-radius: 12px;
   padding: 1rem;
@@ -269,6 +274,32 @@ async function submitComment(postId) {
   flex-direction: column;
   gap: 0.75rem;
   min-width: 280px;
+  max-height: fit-content;
+}
+
+.news-link {
+  width: 100%;
+  text-decoration: none;
+  color: white;
+}
+
+.see_all {
+  background: white;
+  width: 100%;
+  padding: 10px;
+  margin: 5px auto;
+
+  border-radius: 16px;
+
+  color: black;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.see_all:hover {
+  background: #6c63ff;
+  color: white;
 }
 
 .comment {

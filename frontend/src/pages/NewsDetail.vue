@@ -3,7 +3,11 @@
 
   <div class="post-detail">
     <div class="post-header">
-      <img class="dota-icon" :src="activeTab === 'dota' ? dotaIcon : csIcon" alt="icon" />
+      <img
+        class="dota-icon"
+        :src="post.category === 'dota' ? dotaIcon : csIcon"
+        alt="icon"
+      />
       <h1>{{ post.title }}</h1>
     </div>
 
