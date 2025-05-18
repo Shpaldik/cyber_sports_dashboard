@@ -26,8 +26,6 @@
     <!-- Список комментариев с прокруткой -->
     <div class="comments-list">
       <div v-for="c in post.comments" :key="c.id" class="comment">
-        <!-- 1) сначала пробуем взять аватар из c.user.avatar_url (relation),
-            иначе из c.user.avatar, иначе дефолт -->
         <img
           class="avatar"
           :src="
@@ -40,7 +38,6 @@
 
         <div class="comment-body">
           <p class="author">
-            <!-- 2) сначала имя из relation, иначе из user_name -->
             <strong>
               {{ (c.user && c.user.name) || c.user_name }}
             </strong>

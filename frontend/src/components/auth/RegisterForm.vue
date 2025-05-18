@@ -1,90 +1,87 @@
 <template>
-    <div class="register-page">
-      <div class="register-container">
+  <div class="register-page">
+    <div class="register-container">
+      <div class="form-block">
+        <h1>Регистрация</h1>
 
-        <div class="form-block">
-          <h1>Регистрация</h1>
-  
-          <form @submit.prevent="handleRegister" class="register-form">
-            <input type="text" v-model="name" placeholder="Ваш никнейм" />
-            <input type="email" v-model="email" placeholder="Email" />
-            <input type="password" v-model="password" placeholder="Пароль" />
-            <button type="submit">Зарегистрироваться</button>
-            <p v-if="errorMessage" class="error_message">{{ errorMessage }}</p>
-          </form>
-  
-          <label class="checkbox-container">
-            <input type="checkbox" v-model="acceptedPrivacy"/>
-            <span>Я подтверждаю свое согласие на обработку <strong>персональных данных</strong></span>
-          </label>
-  
-          <p class="login-link-1">
-            Уже есть аккаунт?
-          </p>
-         <RouterLink to="/login"><p class="login-link-2">Войти</p></RouterLink>
-        </div>
-  
+        <form @submit.prevent="handleRegister" class="register-form">
+          <input type="text" v-model="name" placeholder="Ваш никнейм" />
+          <input type="email" v-model="email" placeholder="Email" />
+          <input type="password" v-model="password" placeholder="Пароль" />
+          <button type="submit">Зарегистрироваться</button>
+          <p v-if="errorMessage" class="error_message">{{ errorMessage }}</p>
+        </form>
 
-        <div class="image-block">
-          <img src="../../assets/images/register_icon.svg" alt="login character" />
-        </div>
+        <label class="checkbox-container">
+          <input type="checkbox" v-model="acceptedPrivacy" />
+          <span
+            >Я подтверждаю свое согласие на обработку
+            <strong>персональных данных</strong></span
+          >
+        </label>
+
+        <p class="login-link-1">Уже есть аккаунт?</p>
+        <RouterLink to="/login"><p class="login-link-2">Войти</p></RouterLink>
+      </div>
+
+      <div class="image-block">
+        <img src="../../assets/images/register_icon.svg" alt="login character" />
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
-const authStore = useAuthStore()
-const route = useRouter()
-const acceptedPrivacy = ref(false)
+const name = ref("");
+const email = ref("");
+const password = ref("");
+const errorMessage = ref("");
+const authStore = useAuthStore();
+const route = useRouter();
+const acceptedPrivacy = ref(false);
 
 const handleRegister = async () => {
-  errorMessage.value = ''
+  errorMessage.value = "";
 
   if (!name.value || !email.value || !password.value) {
-    errorMessage.value = 'Требуется все поля!'
-    return
+    errorMessage.value = "Требуется все поля!";
+    return;
   }
 
-  if(!acceptedPrivacy.value){
-    errorMessage.value = 'Требуется согласие на обработку персональных данных'
-    return
+  if (!acceptedPrivacy.value) {
+    errorMessage.value = "Требуется согласие на обработку персональных данных";
+    return;
   }
 
   if (password.value.length < 5) {
-    errorMessage.value = 'Пароль должен быть не менее 5 символов'
-    return
+    errorMessage.value = "Пароль должен быть не менее 5 символов";
+    return;
   }
 
   try {
     const res = await authStore.register({
       name: name.value,
       email: email.value,
-      password: password.value
-    })
+      password: password.value,
+    });
 
     if (res && res.status === 1) {
-      route.push('/main')
+      route.push("/main");
     } else if (res && res.status === 0) {
-      errorMessage.value = 'Пользователь уже существует'
+      errorMessage.value = "Пользователь уже существует";
     } else {
-      errorMessage.value = 'Регистрация не удалась'
+      errorMessage.value = "Регистрация не удалась";
     }
   } catch (error) {
-    errorMessage.value = 'Произошла ошибка регистрации'
+    errorMessage.value = "Произошла ошибка регистрации";
   }
-}
+};
 </script>
 
-  
-  
 <style scoped>
 .register-page {
   min-height: 80vh;
@@ -178,21 +175,19 @@ const handleRegister = async () => {
   font-weight: 500;
 }
 
-
 .image-block img {
   width: 100%;
   max-width: 400px;
   height: auto;
 }
 
-.error_message{
+.error_message {
   color: red;
 }
 
-@media (max-width: 930px) {
+@media (max-width: 1024px) {
   .register-container {
     flex-direction: column;
-
   }
 
   .checkbox-container {
@@ -203,6 +198,4 @@ const handleRegister = async () => {
     display: none;
   }
 }
-
 </style>
-  

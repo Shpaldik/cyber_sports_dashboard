@@ -20,7 +20,6 @@
       :key="post.id"
       class="news-card"
     >
-      <!-- info -->
       <div class="news-info">
         <div class="news-title-block">
           <img
@@ -39,7 +38,6 @@
         </div>
       </div>
 
-      <!-- body -->
       <div class="news-body">
         <router-link :to="`/${post.category}/${post.id}`">
           <img
@@ -50,21 +48,26 @@
           />
         </router-link>
 
-        <!-- панель с 3 комментариями + форма -->
         <div class="comments-panel">
           <div v-for="c in post.recent_comments" :key="c.id" class="comment">
-            <img class="avatar" src="../assets/images/logo.svg" alt="avatar" />
+            <img
+              class="avatar"
+              :src="
+                (c.user && c.user.avatar_url) ||
+                (c.user && `http://127.0.0.1:8000/storage/${c.user.avatar}`) ||
+                '../assets/images/logo.svg'
+              "
+              alt="avatar"
+            />
             <div>
               <p>
                 <strong>{{ c.user_name }}</strong>
                 {{ formatTime(c.created_at) }}
               </p>
               <p>{{ c.body }}</p>
-              <button @click.prevent="replyTo(post.id, c.id)">Ответить</button>
             </div>
           </div>
 
-          <!-- Форма для залогиненных -->
           <div v-if="auth.token && auth.user" class="new-comment">
             <textarea
               v-model="newBodies[post.id]"
@@ -95,9 +98,8 @@
       </div>
     </div>
 
-    <!-- если нет постов в категории -->
     <div v-else class="news-card">
-      <p style="padding: 1rem; color: #ccc">Нет новостей в категории {{ activeTab }}</p>
+      <p class="no-news">Нет новостей в категории {{ activeTab }}</p>
     </div>
   </div>
 </template>
@@ -246,26 +248,30 @@ async function submitComment(postId) {
 
 .news-body {
   display: flex;
+  flex-wrap: nowrap; /* Запрет обтекания */
   gap: 1rem;
+  justify-content: space-between;
 }
+
 .news-image {
   width: 100%;
-  max-width: 65%;
+  height: 100%;
   border-radius: 12px;
   object-fit: cover;
-  flex: 1;
 }
+
 .comments-panel {
+  flex: 1 1 35%;
+  max-width: 35%;
   background: rgba(13, 9, 28, 0.3);
   border-radius: 12px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  flex: 0 0 30%;
-  max-width: 400px;
   min-width: 280px;
 }
+
 .comment {
   display: flex;
   gap: 0.75rem;
@@ -305,17 +311,21 @@ async function submitComment(postId) {
     align-items: flex-start;
     gap: 0.5rem;
   }
+
   .news-info {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
+
   .news-body {
     flex-direction: column;
   }
+
   .news-image,
   .comments-panel {
     max-width: 100%;
+    flex: unset;
   }
 }
 

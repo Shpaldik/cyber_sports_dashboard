@@ -103,26 +103,24 @@
         </form>
       </div>
     </div>
-    <p class="admin-subtitle">Управление пользователями</p>
 
     <!-- === Список пользователей === -->
     <div class="user-grid">
+      <p class="admin-subtitle">Управление пользователями</p>
       <div v-for="u in users" :key="u.id" class="user-card">
-        <img :src="u.avatar_url" class="avatar" alt="avatar" />
-        <h3>{{ u.name }}</h3>
-        <p>{{ u.email }}</p>
-        <p>Роль: {{ u.role }}</p>
-        <p :class="{ banned: u.banned }">
-          {{ u.banned ? "Забанен" : "Активен" }}
-        </p>
+        <div class="user-header">
+          <img :src="u.avatar_url" class="avatar" alt="avatar" />
+          <h3 class="name">{{ u.name }}</h3>
+        </div>
         <div class="btn-group">
-          <button @click="viewUser(u.id)" class="btn btn-view">View</button>
           <button
             @click="toggleBan(u.id)"
-            :class="['btn', u.banned ? 'btn-unban' : 'btn-ban']"
+            :class="['btn_ban', u.banned ? 'btn-unban' : 'btn-ban']"
           >
-            {{ u.banned ? "Unban" : "Ban" }}
+            {{ u.banned ? "Разбанить" : "Забанить" }}
+            <img src="../assets/images/ban.svg" alt="" />
           </button>
+          <button @click="viewUser(u.id)" class="btn-view">Посмотреть профиль</button>
         </div>
       </div>
     </div>
@@ -316,8 +314,9 @@ onMounted(() => {
 .admin-subtitle {
   font-size: 1.5rem;
   color: white;
-  margin-bottom: 1rem;
   font-weight: bold;
+
+  margin-top: 20px;
 }
 
 .form-header {
@@ -332,10 +331,11 @@ onMounted(() => {
 }
 
 .form-card {
+  background: rgba(13, 9, 28, 0.3);
   padding: 1.5rem;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(13, 9, 28, 0.3);
+  margin-top: 2rem;
 }
 
 .form-title {
@@ -503,7 +503,8 @@ onMounted(() => {
 }
 
 .user-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   margin-top: 2rem;
@@ -511,13 +512,55 @@ onMounted(() => {
 
 .user-card {
   background-color: rgba(13, 9, 28, 0.3);
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 0.75rem;
   color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   display: flex;
-  flex-direction: column;
   align-items: center;
   text-align: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-view {
+  background-color: rgba(73, 33, 218, 1);
+  padding: 15px;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn_ban {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 0.5rem;
+
+  font-weight: 200;
+  background: none;
+  border: red 1px solid;
+  cursor: pointer;
+
+  color: red;
+}
+
+.user-grid {
+  font-size: 0.9rem;
+}
+
+.name {
+  font-size: 24px;
 }
 </style>
