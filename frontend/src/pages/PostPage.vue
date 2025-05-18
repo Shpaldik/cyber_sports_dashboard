@@ -16,11 +16,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { usePostStore } from '@/stores/post';
-import dotaIcon from '@/assets/images/dota_icon.svg';
-import csIcon from '@/assets/images/cs_icon.svg';
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { usePostStore } from "@/stores/post";
+import dotaIcon from "@/assets/images/dota_icon.svg";
+import csIcon from "@/assets/images/cs_icon.svg";
 
 const route = useRoute();
 const postId = route.params.id;
@@ -29,6 +29,6 @@ const postStore = usePostStore();
 const post = ref(null);
 
 onMounted(async () => {
-  post.value = await postStore.fetchPostById(postId);
+  post.value = await postStore.fetchPostById(postId); // загружаем пост
 });
 </script>

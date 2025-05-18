@@ -35,12 +35,15 @@ import { ref, onMounted } from "vue";
 import ProfileForm from "./ProfileForm.vue";
 import api from "@/services/axios";
 
-const openSettings = ref(false);
+const openSettings = ref(false); //модалка
+
+//привязка к инпутам
 const user = ref({
   name: "",
   avatar_url: "",
 });
 
+//отправка новых сохраненных данных
 const fetchProfile = async () => {
   try {
     const { data } = await api.get("/profile");

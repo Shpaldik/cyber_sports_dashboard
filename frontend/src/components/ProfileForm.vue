@@ -49,19 +49,21 @@ import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 
+// Данные профиля
 const form = ref({
   name: '',
   email: ''
 })
-const previewAvatar = ref(null)
-const avatarFile = ref(null)
+const previewAvatar = ref(null) // Предпросмотр аватара
+const avatarFile = ref(null) // Файл аватара
 
-const passwords = ref({
+const passwords = ref({ // Пароли
   old_password: '',
   new_password: '',
   new_password_confirmation: ''
 })
 
+// Загрузка профиля
 onMounted(async () => {
   try {
     const { data } = await api.get('/profile')
@@ -73,11 +75,13 @@ onMounted(async () => {
   }
 })
 
+// Обработка загрузки аватара
 const handleAvatarUpload = (e) => {
   avatarFile.value = e.target.files[0]
   previewAvatar.value = URL.createObjectURL(avatarFile.value)
 }
 
+// Обновление профиля
 const updateProfile = async () => {
   const formData = new FormData()
   formData.append('_method', 'PUT')
@@ -96,6 +100,8 @@ const updateProfile = async () => {
     console.error(error)
   }
 }
+
+// Пароль
 
 const changePassword = async () => {
   try {

@@ -112,8 +112,8 @@ async function loadPosts() {
   await postStore.fetchPostsByCategory("cs");
 }
 
-onMounted(loadPosts);
-
+onMounted(loadPosts); // загружаем посты
+// Обновляем посты при смене активной категории
 const filteredPosts = computed(() =>
   postStore.posts
     .filter((p) => p.title.toLowerCase().includes(searchTitle.value.toLowerCase()))
@@ -135,6 +135,7 @@ function formatDate(iso) {
   );
 }
 
+// форматирование времени
 function formatTime(iso) {
   const d = new Date(iso);
   return (

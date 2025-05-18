@@ -112,8 +112,9 @@ async function loadPosts() {
   await postStore.fetchPostsByCategory("dota");
 }
 
-onMounted(loadPosts);
+onMounted(loadPosts); // загружаем посты
 
+// Обновляем посты при смене активной категории
 const filteredPosts = computed(() =>
   postStore.posts
     .filter((p) => p.title.toLowerCase().includes(searchTitle.value.toLowerCase()))
@@ -124,6 +125,7 @@ const filteredPosts = computed(() =>
     })
 );
 
+// форматирование даты
 function formatDate(iso) {
   const d = new Date(iso);
   return (
@@ -135,6 +137,7 @@ function formatDate(iso) {
   );
 }
 
+// форматирование времени
 function formatTime(iso) {
   const d = new Date(iso);
   return (
@@ -143,6 +146,7 @@ function formatTime(iso) {
   );
 }
 
+// Отправка комментария
 async function submitComment(postId) {
   const body = (newBodies[postId] || "").trim();
   if (!body) return;

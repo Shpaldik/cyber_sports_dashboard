@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    // app/Http/Controllers/API/PostController.php
 
     public function index(Request $request) {
         $cat = $request->query('category');
@@ -19,7 +18,7 @@ class PostController extends Controller
                 'comments' => function($q){
                     $q->latest()->take(3);
                 },
-                'comments.user'   // <<< вот это — очень важно!
+                'comments.user'  
             ])
             ->when($cat, fn($q) => $q->where('category', $cat))
             ->paginate(5);

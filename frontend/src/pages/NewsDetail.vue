@@ -87,6 +87,7 @@ const newComment = ref("");
 const postStore = usePostStore();
 const auth = useAuthStore();
 
+// загрузка поста
 onMounted(async () => {
   try {
     const res = await api.get(`/posts/${route.params.id}`);
@@ -226,7 +227,7 @@ async function submitComment() {
 .comments-list {
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 10px; /* для скролла */
+  padding-right: 10px;
   margin-bottom: 1rem;
 }
 .comments-list::-webkit-scrollbar {
@@ -240,7 +241,6 @@ async function submitComment() {
 .comments-list {
   max-height: 300px;
   overflow-y: auto;
-  /* … */
 }
 .comment {
   display: flex;

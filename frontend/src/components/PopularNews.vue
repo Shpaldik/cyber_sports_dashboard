@@ -115,26 +115,27 @@ import { useAuthStore } from "@/stores/auth";
 import dotaIcon from "../assets/images/dota_icon.svg";
 import csIcon from "../assets/images/cs_icon.svg";
 
-const activeTab = ref("dota");
-const postStore = usePostStore();
-const auth = useAuthStore();
+const activeTab = ref("dota"); // активная категория
+const postStore = usePostStore(); // хранилище постов
+const auth = useAuthStore(); // хранилище авторизации
 
 // для каждого post.id своё поле ввода
 const newBodies = reactive({});
 
 async function loadPosts(cat) {
-  await postStore.fetchPostsByCategory(cat);
+  await postStore.fetchPostsByCategory(cat); // загружаем посты
 }
 
-onMounted(() => loadPosts(activeTab.value));
-watch(activeTab, loadPosts);
+onMounted(() => loadPosts(activeTab.value)); // загружаем посты
+watch(activeTab, loadPosts); // обновляем посты при смене активной категории
 
 function switchTab(cat) {
-  activeTab.value = cat;
+  activeTab.value = cat; // меняем активную категорию
 }
 
-const filteredPosts = computed(() => postStore.posts);
+const filteredPosts = computed(() => postStore.posts); // все посты
 
+//форматирования даты
 function formatDate(iso) {
   const d = new Date(iso);
   return (
@@ -146,6 +147,7 @@ function formatDate(iso) {
   );
 }
 
+//форматирование времени
 function formatTime(iso) {
   const d = new Date(iso);
   return (
@@ -154,11 +156,7 @@ function formatTime(iso) {
   );
 }
 
-function replyTo(postId, commentId) {
-  // заглушка: можно скроллить к форме или переадресовывать
-  console.log("Reply to", postId, commentId);
-}
-
+//отправка комментария
 async function submitComment(postId) {
   const body = (newBodies[postId] || "").trim();
   if (!body) return;

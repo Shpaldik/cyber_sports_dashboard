@@ -29,7 +29,7 @@
 import { onMounted, computed } from "vue";
 import { usePostStore } from "@/stores/post";
 import dotaIcon from "@/assets/images/dota_icon.svg";
-import csIcon from "@/assets/images/cs_icon.svg";
+import csIcon from "@/assets/images/cs_icon.svg"; // Импортируем иконки
 
 const postStore = usePostStore();
 
@@ -37,6 +37,7 @@ onMounted(async () => {
   await postStore.fetchPosts(); // Загружаем все посты
 });
 
+// Сортируем по количеству комментариев
 const topCommentedPosts = computed(() => {
   return [...postStore.allPosts]
     .sort((a, b) => b.comments_count - a.comments_count)
@@ -53,7 +54,7 @@ const topCommentedPosts = computed(() => {
 
 .MainNews_items {
   display: flex;
-  align-items: center; /* твой ключевой момент */
+  align-items: center;
   gap: 20px;
   width: 100%;
   max-width: 1200px;
@@ -105,17 +106,16 @@ const topCommentedPosts = computed(() => {
 
 .comment_count {
   font-weight: bold;
-  font-size: 20px; /* твой размер */
+  font-size: 20px;
 }
 
 .comments_block img {
   width: 24px;
 }
 
-/* Мобильная адаптация */
 @media (max-width: 600px) {
   .news_icon {
-    width: 40px; /* оставляем как есть */
+    width: 40px;
     margin-bottom: 10px;
   }
 

@@ -22,12 +22,12 @@ import PopularNews from "@/components/PopularNews.vue";
 .page-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* чтобы контейнер занимал всю высоту экрана */
+  min-height: 100vh;
 }
 
 .main-content {
   padding: 10px 15%;
-  flex-grow: 1; /* занимает всё свободное пространство между Header и Footer */
+  flex-grow: 1;
 }
 
 .popular-news {

@@ -28,7 +28,6 @@ class AdminUserController extends Controller
 
     public function show(User $user)
     {
-        // вернуть все поля, кроме пароля
         return response()->json(['status'=>1,'data'=>$user]);
     }
 }

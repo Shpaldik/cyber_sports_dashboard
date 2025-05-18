@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from "vue"; // ref
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
@@ -37,6 +37,7 @@ const router = useRouter();
 const errorMessage = ref("");
 const authStore = useAuthStore();
 
+// Обработка входа
 const handleLogin = async () => {
   try {
     const res = await authStore.login({

@@ -36,14 +36,15 @@ import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
-const name = ref("");
-const email = ref("");
-const password = ref("");
-const errorMessage = ref("");
-const authStore = useAuthStore();
-const route = useRouter();
-const acceptedPrivacy = ref(false);
+const name = ref(""); // Имя
+const email = ref(""); // Email
+const password = ref(""); // Пароль
+const errorMessage = ref(""); // Сообщение об ошибке
+const authStore = useAuthStore(); // Хранилище авторизации
+const route = useRouter(); // Роутер
+const acceptedPrivacy = ref(false); // Согласие на обработку персональных данных
 
+// Регистрация
 const handleRegister = async () => {
   errorMessage.value = "";
 

@@ -198,7 +198,7 @@ async function viewUser(userId) {
   }
 }
 
-function closeModal() {
+function closeModal() { // Закрытие модалки
   showModal.value = false;
   modalUser.value = {};
 }
@@ -243,16 +243,17 @@ async function addPost() {
 }
 
 // Редактирование поста
-function startEdit(post) {
+function startEdit(post) { // Начало редактирования
   isEditing.value = true;
   editedPost.value = { ...post, image: null };
 }
 
-function cancelEdit() {
+function cancelEdit() { // Отмена редактирования
   isEditing.value = false;
   editedPost.value = {};
 }
 
+// Обновление поста
 async function updatePost() {
   const formData = new FormData();
   formData.append("title", editedPost.value.title);

@@ -65,8 +65,8 @@ import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
-const router = useRouter();
-const route = useRoute();
+const router = useRouter(); // Роутер
+const route = useRoute(); // Текущий маршрут
 
 // Проверка, авторизован ли пользователь
 const isAuthenticated = computed(() => {
