@@ -69,7 +69,6 @@ const topCommentedPosts = computed(() => {
 .news_content {
   display: flex;
   align-items: center;
-
   gap: 10px;
   flex: 1;
 }

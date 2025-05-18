@@ -345,4 +345,16 @@ async function submitComment(postId) {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 1024px) {
+  .news-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .comments-panel {
+    max-width: 100%;
+    width: 100%;
+  }
+}
 </style>

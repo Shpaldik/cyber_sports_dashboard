@@ -96,7 +96,7 @@
           </div>
 
           <router-link :to="`/${post.category}/${post.id}`">
-            <button class="see-all">Смотреть все</button>
+            <button class="see_all">Смотреть все</button>
           </router-link>
         </div>
       </div>
@@ -270,7 +270,7 @@ async function submitComment(postId) {
 
 .comments-panel {
   flex: 1 1 35%;
-  max-width: 35%;
+  max-width: 55%;
   background: rgba(13, 9, 28, 0.3);
   border-radius: 12px;
   padding: 1rem;
@@ -278,6 +278,7 @@ async function submitComment(postId) {
   flex-direction: column;
   gap: 0.75rem;
   min-width: 280px;
+  max-height: fit-content;
 }
 
 .comment {
@@ -285,15 +286,32 @@ async function submitComment(postId) {
   gap: 0.75rem;
   align-items: flex-start;
 }
+
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .comment p {
   margin: 0.1rem 0;
 }
+
+.see_all {
+  background: white;
+  width: 100%;
+  padding: 10px;
+  margin: 5px auto;
+
+  border-radius: 16px;
+
+  color: black;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 .comment button {
   background: none;
   border: none;
@@ -301,6 +319,7 @@ async function submitComment(postId) {
   cursor: pointer;
   font-size: 0.85rem;
 }
+
 .see-all {
   margin-top: 0.5rem;
   background: #2d2dff;
@@ -364,5 +383,17 @@ async function submitComment(postId) {
 .new-comment button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .news-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .comments-panel {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 </style>
