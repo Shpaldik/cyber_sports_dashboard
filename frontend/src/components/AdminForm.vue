@@ -144,7 +144,7 @@
 <script setup>
 import Header from "./Header.vue";
 import Footer from "./Footer.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/services/axios";
 import { useAuthStore } from "@/stores/auth";
@@ -158,9 +158,15 @@ const postStore = usePostStore();
 const router = useRouter();
 
 // Редирект, если не админ
-if (authStore.role !== "admin") {
-  router.push("/main");
-}
+watch(
+  () => authStore.role,
+  (newRole) => {
+    if (newRole !== "admin") {
+      router.push("/main");
+    }
+  },
+  { immediate: true }
+);
 
 // Управление пользователями
 const users = ref([]);
@@ -198,7 +204,8 @@ async function viewUser(userId) {
   }
 }
 
-function closeModal() { // Закрытие модалки
+function closeModal() {
+  // Закрытие модалки
   showModal.value = false;
   modalUser.value = {};
 }
@@ -243,12 +250,14 @@ async function addPost() {
 }
 
 // Редактирование поста
-function startEdit(post) { // Начало редактирования
+function startEdit(post) {
+  // Начало редактирования
   isEditing.value = true;
   editedPost.value = { ...post, image: null };
 }
 
-function cancelEdit() { // Отмена редактирования
+function cancelEdit() {
+  // Отмена редактирования
   isEditing.value = false;
   editedPost.value = {};
 }

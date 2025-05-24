@@ -3,7 +3,9 @@
     <div class="header_items">
       <div class="header_left">
         <div class="logo">
-          <img src="../assets/images/logo.svg" alt="logo" width="50" />
+          <RouterLink to="/"
+            ><img src="../assets/images/logo.svg" alt="logo" width="50"
+          /></RouterLink>
           <h1 class="title">CYBERSPORT</h1>
 
           <img
