@@ -29,6 +29,42 @@
           />
           <p class="news-title">{{ post.title }}</p>
         </div>
+        <div class="rating-block">
+          <!-- 1) Отображаем средний рейтинг (например, «4.2 (23)» ) -->
+          <span class="avg-rating">
+            {{ post.average_rating.toFixed(1) }}
+            <small>({{ post.rating_count }})</small>
+          </span>
+
+          <!-- 2) Если пользователь авторизован, показываем «звёздочки» для оценки -->
+          <!-- Показываем звёзды всегда -->
+          <div class="stars">
+            <template v-for="star in 5" :key="star">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                :class="[
+                  'star-icon',
+                  {
+                    filled: star <= (post.user_rating || Math.round(post.average_rating)),
+                  },
+                ]"
+                @click="
+                  () => {
+                    if (auth.token && auth.user) setRating(post.id, star);
+                  }
+                "
+                :style="{ cursor: auth.token && auth.user ? 'pointer' : 'default' }"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+              >
+                <path
+                  d="M12 .587l3.668 7.431L24 9.753l-6 5.847L19.335 24 12 19.771 4.665 24 6 15.6 0 9.753l8.332-1.735z"
+                />
+              </svg>
+            </template>
+          </div>
+        </div>
         <div class="news-meta">
           <div class="comments_block">
             <span>{{ formatDate(post.created_at) }}</span>
@@ -53,16 +89,13 @@
             <img
               class="avatar"
               :src="
-                c.user && (c.user.avatar_url || c.user.avatar)
-                  ? (c.user.avatar_url || c.user.avatar).startsWith('http')
-                    ? c.user.avatar_url || c.user.avatar
-                    : `http://127.0.0.1:8000/storage/${
-                        c.user.avatar_url || c.user.avatar
-                      }`
-                  : '/default-avatar.png'
+                (c.user && c.user.avatar_url) ||
+                (c.user && c.user.avatar) ||
+                '/default-avatar.png'
               "
               alt="avatar"
             />
+
             <div>
               <p>
                 <strong>{{ c.user_name }}</strong>
@@ -115,30 +148,36 @@ import { usePostStore } from "@/stores/post";
 import { useAuthStore } from "@/stores/auth";
 import dotaIcon from "../assets/images/dota_icon.svg";
 import csIcon from "../assets/images/cs_icon.svg";
-import axios from "axios";
 
-const activeTab = ref("dota"); // активная категория
-const postStore = usePostStore(); // хранилище постов
-const auth = useAuthStore(); // хранилище авторизации
+const activeTab = ref("dota");
+const postStore = usePostStore();
+const auth = useAuthStore();
 const role = computed(() => auth.user?.role);
 
-// для каждого post.id своё поле ввода
+// Для каждого post.id своё поле ввода комментария
 const newBodies = reactive({});
 
 async function loadPosts(cat) {
-  await postStore.fetchPostsByCategory(cat); // загружаем посты
+  await postStore.fetchPostsByCategory(cat);
+  // После загрузки постов можно сразу получить рейтинг каждого (если авторизован):
+  if (auth.token && auth.user) {
+    for (const p of postStore.posts) {
+      await postStore.fetchPostRating(p.id);
+    }
+  }
 }
 
-onMounted(() => loadPosts(activeTab.value)); // загружаем посты
-watch(activeTab, loadPosts); // обновляем посты при смене активной категории
+onMounted(() => loadPosts(activeTab.value));
+watch(activeTab, loadPosts);
 
 function switchTab(cat) {
-  activeTab.value = cat; // меняем активную категорию
+  activeTab.value = cat;
 }
 
-const filteredPosts = computed(() => postStore.posts); // все посты
+const filteredPosts = computed(() => {
+  return [...postStore.posts].sort((a, b) => b.average_rating - a.average_rating);
+});
 
-//форматирования даты
 function formatDate(iso) {
   const d = new Date(iso);
   return (
@@ -150,7 +189,6 @@ function formatDate(iso) {
   );
 }
 
-//форматирование времени
 function formatTime(iso) {
   const d = new Date(iso);
   return (
@@ -159,14 +197,12 @@ function formatTime(iso) {
   );
 }
 
-//отправка комментария
 async function submitComment(postId) {
   const body = (newBodies[postId] || "").trim();
   if (!body) return;
 
   try {
     const res = await postStore.addComment(postId, body);
-
     if (res.status === 1) {
       newBodies[postId] = "";
     } else {
@@ -182,10 +218,29 @@ async function submitComment(postId) {
   }
 }
 
-//удаление кммента
+// Удаление комментария (как было раньше)
 const handleDelete = async (id) => {
   if (confirm("Вы точно хотите удалить комментарий?")) {
     await postStore.deleteComment(id);
+  }
+};
+
+// Функция выставления рейтинга пользователем
+const setRating = async (postId, starValue) => {
+  // Если не авторизован — ничего не делаем
+  if (!auth.token || !auth.user) {
+    alert("Только авторизованные пользователи могут ставить рейтинг.");
+    return;
+  }
+
+  try {
+    const res = await postStore.ratePost({ postId, rating: starValue });
+    if (res.status !== 1) {
+      alert("Не удалось сохранить рейтинг: " + (res.message || "…"));
+    }
+    // После успешной отправки метод ratePost в сторе уже обновит post.average_rating, post.rating_count и post.user_rating
+  } catch (e) {
+    console.error("Ошибка при установке рейтинга:", e);
   }
 };
 </script>
@@ -403,5 +458,46 @@ const handleDelete = async (id) => {
     max-width: 100%;
     width: 100%;
   }
+}
+
+.rating-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Средний рейтинг (число и кол-во голосов) */
+.avg-rating {
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+/* Контейнер звёздочек */
+.stars {
+  display: flex;
+  gap: 2px;
+  cursor: pointer;
+}
+
+/* Если неавторизованный — курсор по умолчанию */
+.stars.readonly {
+  cursor: default;
+}
+
+/* SVG-иконка звезды */
+.star-icon {
+  fill: #555; /* серый цвет по умолчанию */
+  transition: fill 0.2s;
+}
+
+/* Залитая звезда */
+.star-icon.filled {
+  fill: #ffd700; /* «золотой» цвет */
+}
+
+/* При наведении, если можно голосовать */
+.stars:hover .star-icon {
+  fill: #ddd;
 }
 </style>

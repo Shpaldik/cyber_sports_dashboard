@@ -7,29 +7,38 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Rating;
+use App\Models\Comment;
+
 
 class PostController extends Controller
 {
 
-    public function index(Request $request) {
-        $cat = $request->query('category');
-        $posts = Post::withCount('comments')
-            ->with([
-                'comments' => function($q){
-                    $q->latest()->take(3);
-                },
-                'comments.user'  
-            ])
-            ->when($cat, fn($q) => $q->where('category', $cat))
-            ->paginate(5);
+    public function index(Request $request)
+    {
+        $category = $request->query('category');
+        $posts = Post::with(['comments.user', 'ratings'])
+                    ->when($category, fn($query) => $query->where('category', $category))
+                    ->get();
+
+
+        $data = $posts->map(fn($p) => [
+            'id'              => $p->id,
+            'title'           => $p->title,
+            'category'        => $p->category,
+            'image'           => $p->image,
+            'created_at'      => $p->created_at,
+            'comments'        => $p->comments, 
+            'comments_count'  => $p->comments()->count(),
+            'average_rating'  => $p->average_rating,
+            'rating_count'    => $p->rating_count,
+        ]);
 
         return response()->json([
             'status' => 1,
-            'message' => 'Posts fetched',
-            'data' => $posts
+            'data'   => ['data' => $data],
         ]);
     }
-
 
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
@@ -159,5 +168,24 @@ class PostController extends Controller
             'message' => 'Post deleted',
             'data'    => null
         ]);
+    }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        if ($this->ratings()->count() === 0) {
+            return 0.0;
+        }
+        // Округлим до одной цифры после запятой
+        return round($this->ratings()->avg('rating'), 1);
+    }
+
+    public function getRatingCountAttribute(): int
+    {
+        return $this->ratings()->count();
     }
 }

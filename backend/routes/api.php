@@ -9,6 +9,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\AdminUserController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\API\RatingController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,7 +30,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 });
 
-
+Route::get('/posts/{post}/rating', [RatingController::class, 'getRating']);
+Route::middleware('auth:sanctum')->put('/posts/{post}/rate', [RatingController::class, 'rate']);
 
 
 
