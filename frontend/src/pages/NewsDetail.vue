@@ -47,6 +47,9 @@
             <span class="time">{{ formatTime(c.created_at) }}</span>
           </p>
           <p>{{ c.body }}</p>
+          <button class="delete" v-if="role === 'admin'" @click="handleDelete(c.id)">
+            Удалить
+          </button>
         </div>
       </div>
     </div>
@@ -68,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
@@ -86,6 +89,7 @@ const newComment = ref("");
 
 const postStore = usePostStore();
 const auth = useAuthStore();
+const role = computed(() => auth.user?.role);
 
 // загрузка поста
 onMounted(async () => {
@@ -137,6 +141,12 @@ async function submitComment() {
     }
   }
 }
+
+const handleDelete = async (id) => {
+  if (confirm("Вы точно хотите удалить комментарий?")) {
+    await postStore.deleteComment(id);
+  }
+};
 </script>
 
 <style scoped>
@@ -268,5 +278,13 @@ async function submitComment() {
 .time {
   font-size: 0.85em;
   color: #888;
+}
+
+.delete {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  cursor: pointer;
+  font-size: 0.85rem;
 }
 </style>

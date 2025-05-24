@@ -57,6 +57,13 @@
                   {{ formatTime(c.created_at) }}
                 </p>
                 <p>{{ c.body }}</p>
+                <button
+                  class="delete"
+                  v-if="role === 'admin'"
+                  @click="handleDelete(c.id)"
+                >
+                  Удалить
+                </button>
               </div>
             </div>
 
@@ -106,6 +113,7 @@ const auth = useAuthStore();
 const searchTitle = ref("");
 const searchDate = ref("");
 const newBodies = reactive({}); // для каждого поста своё поле ввода
+const role = computed(() => auth.user?.role);
 
 // Загружаем только CS2 посты
 async function loadPosts() {
@@ -166,6 +174,12 @@ async function submitComment(postId) {
     }
   }
 }
+
+const handleDelete = async (id) => {
+  if (confirm("Вы точно хотите удалить комментарий?")) {
+    await postStore.deleteComment(id);
+  }
+};
 </script>
 
 <style scoped>
@@ -357,5 +371,13 @@ async function submitComment(postId) {
     max-width: 100%;
     width: 100%;
   }
+}
+
+.delete {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  cursor: pointer;
+  font-size: 0.85rem;
 }
 </style>
