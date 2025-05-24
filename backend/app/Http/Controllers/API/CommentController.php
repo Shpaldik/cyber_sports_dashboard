@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 
 class CommentController extends Controller
@@ -51,5 +52,17 @@ class CommentController extends Controller
             'message' => 'Comment added',
             'data'    => $comment,
         ], 201);
+    }
+    public function destroy($id)
+    {
+        $comment = Comment::findOrFail($id);
+
+        if (auth()->user()->role !== 'admin') {
+            return response()->json(['message' => 'Недостаточно прав'], 403);
+        }
+
+        $comment->delete();
+
+        return response()->json(['message' => 'Комментарий удален']);
     }
 }

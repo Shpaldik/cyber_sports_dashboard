@@ -69,6 +69,7 @@
                 {{ formatTime(c.created_at) }}
               </p>
               <p>{{ c.body }}</p>
+              <button v-if="role === 'admin'" @click="handleDelete(c.id)">Удалить</button>
             </div>
           </div>
 
@@ -114,10 +115,12 @@ import { usePostStore } from "@/stores/post";
 import { useAuthStore } from "@/stores/auth";
 import dotaIcon from "../assets/images/dota_icon.svg";
 import csIcon from "../assets/images/cs_icon.svg";
+import axios from "axios";
 
 const activeTab = ref("dota"); // активная категория
 const postStore = usePostStore(); // хранилище постов
 const auth = useAuthStore(); // хранилище авторизации
+const role = computed(() => auth.user?.role);
 
 // для каждого post.id своё поле ввода
 const newBodies = reactive({});
@@ -178,6 +181,13 @@ async function submitComment(postId) {
     }
   }
 }
+
+//удаление кммента
+const handleDelete = async (id) => {
+  if (confirm("Вы точно хотите удалить комментарий?")) {
+    await postStore.deleteComment(id);
+  }
+};
 </script>
 
 <style scoped>

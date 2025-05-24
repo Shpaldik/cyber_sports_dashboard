@@ -61,8 +61,34 @@ export const usePostStore = defineStore('post', {
           }
         }
       }
-
+      
       return res.data; // Возвращаем ответ для возможной обработки в компоненте
+    },
+
+async deleteComment(commentId) {
+  try {
+    const res = await api.delete(`/comments/${commentId}`);
+    if (res.data.status === 1) {
+      // находим пост, у которого есть этот комментарий
+      const targetPost = this.posts.find(post =>
+        post.recent_comments.some(c => c.id === commentId)
+      );
+
+      if (targetPost) {
+        // Удаляем комментарий из recent_comments
+        targetPost.recent_comments = targetPost.recent_comments.filter(c => c.id !== commentId);
+
+        // Уменьшаем счётчик ---- если он больше 0
+        if (typeof targetPost.comments_count === 'number' && targetPost.comments_count > 0) {
+          targetPost.comments_count--;
+        }
+      }
     }
+  } catch (error) {
+    console.error('Ошибка при удалении комментария:', error);
+  }
+}
+
+
   }
 });
