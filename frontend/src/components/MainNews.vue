@@ -26,20 +26,36 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
-import { usePostStore } from "@/stores/post";
+import { ref, onMounted, computed } from "vue";
+import api from "@/services/axios";
 import dotaIcon from "@/assets/images/dota_icon.svg";
-import csIcon from "@/assets/images/cs_icon.svg"; // Импортируем иконки
+import csIcon from "@/assets/images/cs_icon.svg";
 
-const postStore = usePostStore();
+const allPosts = ref([]);
 
 onMounted(async () => {
-  await postStore.fetchPosts(); // Загружаем все посты
+  try {
+    const res = await api.get("/posts");
+    if (res.data.status === 1) {
+      allPosts.value = res.data.data.data;
+    }
+  } catch (e) {
+    console.error("Ошибка при загрузке всех постов:", e);
+  }
 });
 
-// Сортируем по количеству комментариев
+// сортировка главных новостей по комменту
 const topCommentedPosts = computed(() => {
-  return [...postStore.allPosts]
+  return [...allPosts.value]
+    .map((p) => ({
+      ...p,
+      comments_count:
+        p.comments_count != null
+          ? p.comments_count
+          : Array.isArray(p.comments)
+          ? p.comments.length
+          : 0,
+    }))
     .sort((a, b) => b.comments_count - a.comments_count)
     .slice(0, 4);
 });
@@ -77,7 +93,6 @@ const topCommentedPosts = computed(() => {
 .news_text {
   font-size: 2rem;
   margin: 0 0 10px 0;
-
   color: white;
 }
 
