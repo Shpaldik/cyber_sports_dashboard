@@ -39,7 +39,11 @@
             <img
               v-if="post.image"
               class="news-image"
-              :src="`http://127.0.0.1:8000/storage/${post.image}`"
+              :src="
+                isUrl(post.image)
+                  ? post.image
+                  : `http://127.0.0.1:8000/storage/${post.image}`
+              "
               alt="news"
             />
           </RouterLink>
@@ -182,6 +186,15 @@ const handleDelete = async (id) => {
     await postStore.deleteComment(id);
   }
 };
+
+function isUrl(str) {
+  try {
+    new URL(str);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 </script>
 
 <style scoped>

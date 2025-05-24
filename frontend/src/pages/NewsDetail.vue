@@ -12,10 +12,12 @@
     </div>
 
     <img
-      class="post-image"
       v-if="post.image"
-      :src="`http://127.0.0.1:8000/storage/${post.image}`"
-      alt="post image"
+      class="news-image"
+      :src="
+        isUrl(post.image) ? post.image : `http://127.0.0.1:8000/storage/${post.image}`
+      "
+      alt="news"
     />
 
     <p class="post-body">Описание:</p>
@@ -147,6 +149,15 @@ const handleDelete = async (id) => {
     await postStore.deleteComment(id);
   }
 };
+
+function isUrl(str) {
+  try {
+    new URL(str);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 </script>
 
 <style scoped>
