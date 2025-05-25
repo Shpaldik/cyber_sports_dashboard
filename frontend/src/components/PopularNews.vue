@@ -99,10 +99,9 @@
               "
               alt="avatar"
             />
-
             <div>
               <p>
-                <strong>{{ c.user_name }}</strong>
+                <strong>{{ c.user.name }}</strong>
                 {{ formatTime(c.created_at) }}
               </p>
               <p>{{ c.body }}</p>

@@ -16,7 +16,9 @@
           <input type="checkbox" v-model="acceptedPrivacy" />
           <span
             >Я подтверждаю свое согласие на обработку
-            <strong>персональных данных</strong></span
+            <RouterLink to="/useragreement"
+              ><strong class="privacy-link">персональных данных</strong></RouterLink
+            ></span
           >
         </label>
 
@@ -198,5 +200,10 @@ const handleRegister = async () => {
   .image-block {
     display: none;
   }
+}
+
+.privacy-link {
+  color: white;
+  text-decoration: underline;
 }
 </style>

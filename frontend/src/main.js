@@ -13,6 +13,8 @@ import AdminPanel from '@/pages/AdminPanel.vue'
 import Cs_news from './pages/cs_news.vue'
 import Dota_news from './pages/dota_news.vue'
 import NewsDetail from './pages/NewsDetail.vue'
+import PrivacyPolicy from './pages/PrivacyPolicy.vue'
+import UserAgreement from './pages/UserAgreement.vue'
 
 const routes = [
     { path: '/', redirect: '/main' },
@@ -23,7 +25,9 @@ const routes = [
     { path: '/admin', component: AdminPanel },
     { path: '/cs_news', component: Cs_news},
     { path: '/dota_news', component: Dota_news},
-    { path: '/:category/:id',name: 'NewsDetail', component: NewsDetail}
+    { path: '/:category/:id',name: 'NewsDetail', component: NewsDetail},
+    { path: '/privacypolicy', name: 'PrivacyPolicy', component: PrivacyPolicy},
+    { path: '/useragreement', name: 'UserAgreement', component: UserAgreement},
 
 ]
 
