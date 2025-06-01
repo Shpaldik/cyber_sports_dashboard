@@ -1,10 +1,9 @@
-// resources/js/main.js
-
 import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
 import { createPinia } from 'pinia'
+import PiniaPersistedstate from 'pinia-plugin-persistedstate'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import Main from './pages/Main.vue'
 import Register from './pages/auth/Register.vue'
@@ -16,6 +15,9 @@ import Dota_news from './pages/dota_news.vue'
 import NewsDetail from './pages/NewsDetail.vue'
 import PrivacyPolicy from './pages/PrivacyPolicy.vue'
 import UserAgreement from './pages/UserAgreement.vue'
+
+import { useAuthStore } from '@/stores/auth'
+import api, { setupInterceptors } from '@/services/axios'
 
 const routes = [
   { path: '/', redirect: '/main' },
@@ -31,19 +33,23 @@ const routes = [
   { path: '/useragreement', name: 'UserAgreement', component: UserAgreement },
 ]
 
+const app = createApp(App)
+
+// 1) Создаём Pinia:
+const pinia = createPinia()
+// 2) Подключаем плагин persistedstate:
+pinia.use(PiniaPersistedstate)
+// 3) Регистрируем Pinia в приложении:
+app.use(pinia)
+
+// С этого момента Pinia-persist уже может загружать/сохранять state
+// И только после этого делаем:
+const authStore = useAuthStore()
+setupInterceptors(authStore)
+
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 })
-
-const pinia = createPinia()
-
-const app = createApp(App)
-app.use(pinia)
 app.use(router)
-
-// НЕ вызываем authStore.loadTokenFromStorage() — Pinia-persist сам восстанавливает state
-// const authStore = useAuthStore()
-// authStore.loadTokenFromStorage()
-
 app.mount('#app')

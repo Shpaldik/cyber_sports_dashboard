@@ -1,8 +1,5 @@
-// src/stores/auth.js
 import { defineStore } from 'pinia'
-import { setupAxiosInterceptors } from '@/services/axios' // Импортируем функцию
-
-const api = setupAxiosInterceptors()
+import api from '@/services/axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -38,6 +35,9 @@ export const useAuthStore = defineStore('auth', {
   persist: {
     key: 'auth',
     storage: localStorage,
+    // можно добавить serialize/deserialize, если нужно: 
+    // serialize: (state) => JSON.stringify(state),
+    // deserialize: (str) => JSON.parse(str),
   },
 })
 

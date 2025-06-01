@@ -573,4 +573,44 @@ onMounted(() => {
 .name {
   font-size: 24px;
 }
+
+.product-grid {
+  display: grid; /* добавить */
+  width: 100%;
+  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.product-card {
+  background-color: rgba(13, 9, 28, 0.3);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  /* max-height: 400px; */ /* убрать или заменить */
+  margin-top: 20px;
+  min-height: 150px; /* например, минимальная высота */
+  flex-wrap: wrap; /* чтобы контент переносился */
+}
+
+.product-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1; /* чтобы занимать доступное пространство */
+  min-width: 0; /* важно для flex-элементов с переносом */
+}
+
+.product-title {
+  color: white;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  white-space: normal; /* разрешить перенос */
+  word-wrap: break-word; /* перенос слов */
+  overflow-wrap: break-word;
+  min-width: 0; /* для корректного поведения внутри flex */
+}
 </style>

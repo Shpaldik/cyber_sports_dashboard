@@ -1,23 +1,52 @@
-// src/plugins/axios.js
 import axios from 'axios'
-import { useAuthStore } from '@/stores/auth'
 
-export function setupAxiosInterceptors() {
-  const api = axios.create({
-    baseURL: 'http://ruslad71.beget.tech/api',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    withCredentials: false,
-  })
+const api = axios.create({
+  baseURL: 'http://ruslad71.beget.tech/api',
+  withCredentials: true,
+})
 
+export function setupInterceptors(authStore) {
   api.interceptors.request.use(config => {
-    const authStore = useAuthStore()
-    console.log('[Axios] Bearer из Pinia:', authStore.token)
-    if (authStore.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`
+    // 1. Сначала пытаемся взять token из уже восстановленного Pinia-state
+    let token = authStore.token
+
+    // 2. Если Pinia-store ещё не «наполнен» (например, сразу после F5), пробуем достать из localStorage
+    if (!token) {
+      const raw = localStorage.getItem('auth')
+      console.log('[Axios] raw из localStorage[\'auth\']:', raw)
+
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw)
+
+          // Вариант A: если плагин хранит state «плоско» — parsed.token
+          if (parsed.token) {
+            token = parsed.token
+          }
+          // Вариант B: если плагин обёрнут state внутрь { state: { … } }
+          else if (parsed.state && parsed.state.token) {
+            token = parsed.state.token
+          }
+
+          // Если нашли token — пишем его в Pinia, чтобы дальше authStore.token уже был не null
+          if (token) {
+            authStore.token = token
+          }
+        } catch (e) {
+          console.warn('[Axios] не удалось распарсить localStorage[\'auth\']:', e)
+          token = null
+        }
+      }
     }
+
+    // 3. Если всё-таки есть token — добавляем заголовок
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+      console.log('[Axios] Bearer из Pinia:', token)
+    } else {
+      console.log('[Axios] Bearer из Pinia: null')
+    }
+
     return config
   }, error => {
     return Promise.reject(error)
@@ -26,16 +55,14 @@ export function setupAxiosInterceptors() {
   api.interceptors.response.use(
     response => response,
     error => {
-      if (error.response?.status === 401) {
-        console.warn('[Axios] Получен 401 — сбрасываем Pinia-auth')
-        useAuthStore().logout()
+      if (error.response && error.response.status === 401) {
+        authStore.logout()
+        // По желанию можно полностью очищать весь сохранённый state:
+        // localStorage.removeItem('auth')
       }
       return Promise.reject(error)
     }
   )
-
-  return api
 }
 
-const api = setupAxiosInterceptors()
 export default api
