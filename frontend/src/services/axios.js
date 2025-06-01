@@ -1,35 +1,41 @@
+// src/plugins/axios.js
 import axios from 'axios'
-import { useAuthStore } from "@/stores/auth" // Импортируем хранилище для авторизации
+import { useAuthStore } from '@/stores/auth'
 
-const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
-  withCredentials: true // Позволяет работать с cookies
-})
+export function setupAxiosInterceptors() {
+  const api = axios.create({
+    baseURL: 'http://ruslad71.beget.tech/api',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    withCredentials: false,
+  })
 
-api.interceptors.request.use(config => {
-  // Получаем токен из Pinia store или localStorage
-  const authStore = useAuthStore()
-  const token = authStore.token || localStorage.getItem('token')
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}` // Добавляем токен в заголовок
-  }
-  return config
-}, error => {
-  return Promise.reject(error) // Если запрос не удался
-})
-
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response && error.response.status === 401) {
-      // Если получили ошибку 401, очищаем токен
-      const authStore = useAuthStore()
-      authStore.logout()  // Можно добавить метод logout в store для очистки токена
-      localStorage.removeItem('token')
+  api.interceptors.request.use(config => {
+    const authStore = useAuthStore()
+    console.log('[Axios] Bearer из Pinia:', authStore.token)
+    if (authStore.token) {
+      config.headers.Authorization = `Bearer ${authStore.token}`
     }
+    return config
+  }, error => {
     return Promise.reject(error)
-  }
-)
+  })
 
+  api.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response?.status === 401) {
+        console.warn('[Axios] Получен 401 — сбрасываем Pinia-auth')
+        useAuthStore().logout()
+      }
+      return Promise.reject(error)
+    }
+  )
+
+  return api
+}
+
+const api = setupAxiosInterceptors()
 export default api
