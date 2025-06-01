@@ -325,19 +325,13 @@ onMounted(() => {
   font-size: 1.5rem;
   color: white;
   font-weight: bold;
-
   margin-top: 20px;
 }
 
+/* Формы */
 .form-header {
   display: flex;
   align-items: center;
-}
-
-.product-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .form-card {
@@ -382,6 +376,7 @@ onMounted(() => {
   min-height: 80px;
 }
 
+/* Кнопки */
 .btn {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -425,7 +420,9 @@ onMounted(() => {
   background-color: #16a34a;
 }
 
+/* === Новости: grid + карточки === */
 .product-grid {
+  display: grid;
   width: 100%;
   gap: 2.5rem;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -439,8 +436,19 @@ onMounted(() => {
   border-radius: 0.75rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   width: 100%;
-  max-height: 400px;
   margin-top: 20px;
+
+  /* Чтобы содержимое не сжималось слишком сильно */
+  min-height: 150px;
+  flex-wrap: wrap;
+}
+
+.product-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1; /* дает приоритет в занятии доступного пространства */
+  min-width: 0; /* обязательно: разрешает дочернему элементу ужиматься и переноситься */
 }
 
 .product-title {
@@ -448,6 +456,10 @@ onMounted(() => {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
   font-weight: bold;
+  white-space: normal; /* разрешить перенос текста */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
 }
 
 .btn-group {
@@ -462,6 +474,7 @@ onMounted(() => {
   margin-bottom: 0.5rem;
 }
 
+/* Модалки */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -480,6 +493,7 @@ onMounted(() => {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
+/* Загрузка аватара */
 .avatar-upload {
   padding: 8px;
   border: none;
@@ -491,16 +505,12 @@ onMounted(() => {
   transition: background-color 0.2s;
 }
 
-.banned {
-  color: red;
-}
-
+/* Аватары */
 .avatar {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 10px;
 }
 
 .avatar-large {
@@ -512,12 +522,13 @@ onMounted(() => {
   display: block;
 }
 
+/* === Управление пользователями: grid + карточки === */
 .user-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   margin-top: 2rem;
+  font-size: 0.9rem;
 }
 
 .user-card {
@@ -526,23 +537,44 @@ onMounted(() => {
   border-radius: 0.75rem;
   color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+
   display: flex;
   align-items: center;
-  text-align: center;
   justify-content: space-between;
-
   gap: 10px;
+  flex-wrap: wrap; /* внутренний контент будет переноситься */
+  min-height: 120px;
 }
 
 .user-header {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  flex-grow: 1; /* чтобы имя + аватар занимали всё доступное пространство */
+  min-width: 0; /* разрешает содержимому ужиматься и переноситься */
+}
+
+.name {
+  font-size: 24px;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+/* Кнопки внутри карточки пользователя */
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0; /* запрещаем кнопкам ужиматься */
+  margin-top: 0.5rem; /* при нехватке ширины кнопки перейдут на новую строку */
 }
 
 .btn-view {
   background-color: rgba(73, 33, 218, 1);
-  padding: 15px;
+  padding: 10px 15px;
   border-radius: 0.5rem;
   color: white;
   font-weight: 500;
@@ -551,66 +583,26 @@ onMounted(() => {
   transition: background 0.3s ease;
 }
 
+.btn-view:hover {
+  background-color: rgba(58, 26, 172, 1);
+}
+
 .btn_ban {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 15px;
   border-radius: 0.5rem;
-
   font-weight: 200;
   background: none;
   border: red 1px solid;
   cursor: pointer;
-
   color: red;
+  flex-shrink: 0;
 }
 
-.user-grid {
-  font-size: 0.9rem;
-}
-
-.name {
-  font-size: 24px;
-}
-
-.product-grid {
-  display: grid; /* добавить */
-  width: 100%;
-  gap: 2.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-.product-card {
-  background-color: rgba(13, 9, 28, 0.3);
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  width: 100%;
-  /* max-height: 400px; */ /* убрать или заменить */
-  margin-top: 20px;
-  min-height: 150px; /* например, минимальная высота */
-  flex-wrap: wrap; /* чтобы контент переносился */
-}
-
-.product-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-grow: 1; /* чтобы занимать доступное пространство */
-  min-width: 0; /* важно для flex-элементов с переносом */
-}
-
-.product-title {
-  color: white;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  white-space: normal; /* разрешить перенос */
-  word-wrap: break-word; /* перенос слов */
-  overflow-wrap: break-word;
-  min-width: 0; /* для корректного поведения внутри flex */
+.btn_ban.btn-unban {
+  color: #22c55e;
+  border-color: #22c55e;
 }
 </style>

@@ -331,29 +331,26 @@ function isUrl(str) {
 
 .news-body {
   display: flex;
-  flex-wrap: nowrap; /* Запрет обтекания */
   gap: 1rem;
-  justify-content: space-between;
+  /* убираем flex-wrap: nowrap, тк по умолчанию nowrap и так стоит */
+  /* justify-content: space-between — тоже не нужен, если вы жёстко задаёте пропорции */
 }
 
 .news-image {
+  /* Задаём флекс-элементу направление: не сжиматься меньше, чем надо, и не растягиваться больше */
+  flex: 0 0 65%;
+  /* Вместо width:100%/height:100% лучше: */
   width: 100%;
-  height: 100%;
+  height: auto;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: cover; /* можно оставить, чтобы обрезать лишнее, если превьюка не точно под пропорции */
 }
 
+/* Блок комментариев пусть займёт оставшиеся 35% */
 .comments-panel {
-  flex: 1 1 35%;
-  max-width: 55%;
-  background: rgba(13, 9, 28, 0.3);
-  border-radius: 12px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-width: 280px;
-  max-height: fit-content;
+  flex: 0 0 35%;
+  max-width: 35%;
+  /* остальные ваши стили… */
 }
 
 .comment {

@@ -9,7 +9,7 @@
       </div>
 
       <div class="header_right">
-        <p>©CYBERSPORT 2025</p>
+        <p class="copyright">©CYBERSPORT 2025</p>
         <RouterLink to="/privacypolicy" class="privacy_link"
           >Политика конфиденциальности</RouterLink
         >
@@ -119,6 +119,10 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  .copyright {
+    display: none;
   }
 }
 
