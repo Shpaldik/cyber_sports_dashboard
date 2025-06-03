@@ -105,8 +105,8 @@
     </div>
 
     <!-- === Список пользователей === -->
+    <p class="admin-subtitle">Управление пользователями</p>
     <div class="user-grid">
-      <p class="admin-subtitle">Управление пользователями</p>
       <div v-for="u in users" :key="u.id" class="user-card">
         <div class="user-header">
           <img :src="u.avatar_url" class="avatar" alt="avatar" />
@@ -466,6 +466,8 @@ onMounted(() => {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
+  max-width: 250px;
 }
 
 .product-body,
